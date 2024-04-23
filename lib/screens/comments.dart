@@ -93,6 +93,28 @@ class _CommentsState extends State<Comments> {
     return formattedDate;
   }
 
+  Future<void> _handleRefresh() async {
+    try {
+      var snapshot = await FirebaseDatabase.instance
+          .ref()
+          .child('Blogs')
+          .child(widget.blogPost.data.postId)
+          .child('comments')
+          .once();
+
+      var data = snapshot.snapshot.value;
+      List<BlogComment> updatedComments = _parseComments(data);
+
+      setState(() {
+        widget.blogPost.data.comments = updatedComments;
+      });
+
+      Fluttertoast.showToast(msg: "Comments refreshed successfully");
+    } catch (error) {
+      Fluttertoast.showToast(msg: "Error refreshing comments: $error");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,119 +148,122 @@ class _CommentsState extends State<Comments> {
           ),
         ),
       ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SinglePost(
-                    data: widget.blogPost.data,
-                    isCommentScreen: true,
-                  ),
-                  ListView.builder(
-                    itemCount: widget.blogPost.data.comments.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      final comment = widget.blogPost.data.comments[index];
-                      return Container(
-                        padding: const EdgeInsets.all(10),
-                        margin: const EdgeInsets.symmetric(vertical: 5),
-                        decoration: BoxDecoration(
-                          color: Constants.primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              comment.commentText,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Constants.primaryColor,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              'Email: ${comment.userEmail}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              'On: ${formatTimestamp(comment.timestamp)}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(
-                    height: 100,
-                  )
-                ],
-              ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                color: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _commentController,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Constants.primaryColor,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Add a comment...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25),
+                    SinglePost(
+                      data: widget.blogPost.data,
+                      isCommentScreen: true,
+                    ),
+                    ListView.builder(
+                      itemCount: widget.blogPost.data.comments.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final comment = widget.blogPost.data.comments[index];
+                        return Container(
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Constants.primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        addComment(_commentController.text);
-                        _commentController.clear();
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                comment.commentText,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Constants.primaryColor,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'Email: ${comment.userEmail}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'On: ${formatTimestamp(comment.timestamp)}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Constants.primaryColor,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 24),
-                      ),
-                      child: const Text(
-                        "Post",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
                     ),
+                    const SizedBox(
+                      height: 100,
+                    )
                   ],
                 ),
               ),
-            ),
-          ],
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _commentController,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Constants.primaryColor,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Add a comment...',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          addComment(_commentController.text);
+                          _commentController.clear();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Constants.primaryColor,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 24),
+                        ),
+                        child: const Text(
+                          "Post",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

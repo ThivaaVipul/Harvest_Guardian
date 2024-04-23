@@ -69,7 +69,6 @@ class _SinglePostState extends State<SinglePost> {
     });
 
     if (isLiked) {
-      // Add the current user's email to the 'likes' list
       await databaseReference
           .child('Blogs')
           .child(widget.data.postId)
@@ -96,7 +95,6 @@ class _SinglePostState extends State<SinglePost> {
         },
       );
     } else {
-      // Remove the current user's email from the 'likes' list
       final snapshot = await databaseReference
           .child('Blogs')
           .child(widget.data.postId)
@@ -117,7 +115,6 @@ class _SinglePostState extends State<SinglePost> {
       }
     }
 
-    // Fetch updated likes data from Firebase
     var snapshot = await databaseReference
         .child("Blogs")
         .child(widget.data.postId)
@@ -284,7 +281,7 @@ class _SinglePostState extends State<SinglePost> {
                       height: showHeart ? heartSize : 100.0,
                       child: const Icon(
                         Icons.favorite,
-                        color: Colors.red,
+                        color: Colors.white,
                         size: 100,
                       ),
                     ),

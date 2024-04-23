@@ -41,13 +41,6 @@ class _AddBlogPostState extends State<AddBlogPost> {
     });
   }
 
-  int generateRandomNumber() {
-    Random random = Random();
-    int min = 100000;
-    int max = 999999;
-    return min + random.nextInt(max - min);
-  }
-
   Future<void> _uploadBlogPost() async {
     FocusScope.of(context).unfocus();
     if (_image == null) {
@@ -69,7 +62,8 @@ class _AddBlogPostState extends State<AddBlogPost> {
       Reference storageReference = FirebaseStorage.instance
           .ref()
           .child("BlogImages")
-          .child('${generateRandomNumber()}jpg');
+          .child(
+              '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}.jpg');
       UploadTask uploadTask = storageReference.putFile(_image!);
       await uploadTask;
 

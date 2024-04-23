@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -16,34 +14,61 @@ class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _CommunityPageState createState() => _CommunityPageState();
 }
 
 class _CommunityPageState extends State<CommunityPage> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  List<Blogs> blogsData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
+  }
+
+  Future<void> _handleRefresh() async {
+    try {
+      // Fetch new data
+      List<Blogs> newData = await _getData();
+
+      setState(() {
+        blogsData = newData;
+      });
+
+      Fluttertoast.showToast(msg: "Blog refreshed successfully");
+    } catch (error) {
+      Fluttertoast.showToast(msg: "Error refreshing data: $error");
+    }
+  }
+
   Future<List<Blogs>> _getData() async {
-    List<Blogs> blogsData = [];
     DatabaseReference reference = FirebaseDatabase.instance.ref();
     try {
       var snapshot = await reference.child("Blogs").once();
       var data = snapshot.snapshot.value;
       if (data != null && data is Map<dynamic, dynamic>) {
+        List<Blogs> newData = [];
         data.forEach((key, value) {
           List<String> likes = _parseLikes(value['likes']);
           List<BlogComment> comments = _parseComments(value['comments']);
 
-          blogsData.add(
+          newData.add(
             Blogs(
-                desc: value['desc'],
-                title: value['title'],
-                image: value['image'],
-                postId: key,
-                likes: likes,
-                comments: comments,
-                timestamp: value['timestamp'],
-                userEmail: value['userEmail']),
+              desc: value['desc'],
+              title: value['title'],
+              image: value['image'],
+              postId: key,
+              likes: likes,
+              comments: comments,
+              timestamp: value['timestamp'],
+              userEmail: value['userEmail'],
+            ),
           );
         });
-        return blogsData;
+        return newData;
       } else {
         Fluttertoast.showToast(msg: "No Posts Uploaded Yet");
         return [];
@@ -106,12 +131,6 @@ class _CommunityPageState extends State<CommunityPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _getData();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -121,7 +140,7 @@ class _CommunityPageState extends State<CommunityPage> {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               PageTransition(
                 child: const HomeScreen(),
@@ -144,66 +163,72 @@ class _CommunityPageState extends State<CommunityPage> {
           ),
         ),
       ),
-      body: FutureBuilder<List<Blogs>>(
-        future: _getData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: Constants.primaryColor,
-              ),
-            );
-          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            // Sort the blog posts based on timestamp
-            snapshot.data!.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                        child: Comments(
-                          blogPost: SinglePost(
-                            data: snapshot.data![index],
-                            isCommentScreen: true,
-                          ),
-                        ),
-                        type: PageTransitionType.topToBottom,
-                      ),
-                    );
-                  },
-                  child: SinglePost(
-                    data: snapshot.data![index],
-                    isCommentScreen: false,
-                  ),
-                );
-              },
-            );
-          } else {
-            return Center(
-              child: Text(
-                "No Posts Uploaded Yet",
-                style: TextStyle(
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _handleRefresh,
+        child: FutureBuilder<List<Blogs>>(
+          future: _getData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(
                   color: Constants.primaryColor,
-                  fontSize: 18,
                 ),
-              ),
-            );
-          }
-        },
+              );
+            } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              // Sort the blog posts based on timestamp
+              snapshot.data!.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          child: Comments(
+                            blogPost: SinglePost(
+                              data: snapshot.data![index],
+                              isCommentScreen: true,
+                            ),
+                          ),
+                          type: PageTransitionType.topToBottom,
+                        ),
+                      );
+                    },
+                    child: SinglePost(
+                      data: snapshot.data![index],
+                      isCommentScreen: false,
+                    ),
+                  );
+                },
+              );
+            } else {
+              return Center(
+                child: Text(
+                  "No Posts Uploaded Yet",
+                  style: TextStyle(
+                    color: Constants.primaryColor,
+                    fontSize: 18,
+                  ),
+                ),
+              );
+            }
+          },
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Constants.primaryColor,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.edit),
+        label: const Text('Ask Community'),
         onPressed: () {
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             PageTransition(
-                child: const AddBlogPost(),
-                type: PageTransitionType.topToBottom),
+              child: const AddBlogPost(),
+              type: PageTransitionType.topToBottom,
+            ),
           );
         },
       ),
