@@ -5,9 +5,7 @@ import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:harvest_guardian/constants.dart';
-import 'package:harvest_guardian/screens/home_screen.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:tflite/tflite.dart';
 
 class PlantDiseaseDetectionPage extends StatefulWidget {
@@ -218,13 +216,7 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
         ),
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              PageTransition(
-                child: const HomeScreen(),
-                type: PageTransitionType.bottomToTop,
-              ),
-            );
+            Navigator.popUntil(context, ModalRoute.withName('/'));
           },
           icon: Icon(
             Icons.arrow_back,

@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'dart:io';
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,9 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:harvest_guardian/constants.dart';
-import 'package:harvest_guardian/screens/community_screen.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:page_transition/page_transition.dart';
 
 class AddBlogPost extends StatefulWidget {
   const AddBlogPost({super.key});
@@ -90,10 +87,7 @@ class _AddBlogPostState extends State<AddBlogPost> {
         _isLoading = false;
       });
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const CommunityPage()),
-      );
+      Navigator.popUntil(context, ModalRoute.withName('/'));
     } catch (error) {
       Fluttertoast.showToast(msg: "Error uploading post: $error");
       setState(() {
@@ -112,13 +106,7 @@ class _AddBlogPostState extends State<AddBlogPost> {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              PageTransition(
-                child: const CommunityPage(),
-                type: PageTransitionType.bottomToTop,
-              ),
-            );
+            Navigator.popUntil(context, ModalRoute.withName('/'));
           },
           icon: Icon(
             Icons.arrow_back,
@@ -266,12 +254,22 @@ class _AddBlogPostState extends State<AddBlogPost> {
                 height: 30,
               ),
               _isLoading
-                  ? Container(
-                      width: 200,
-                      margin: const EdgeInsets.symmetric(horizontal: 60),
-                      child: LinearProgressIndicator(
-                        color: Constants.primaryColor,
-                      ),
+                  ? Column(
+                      children: [
+                        Container(
+                          width: 200,
+                          margin: const EdgeInsets.symmetric(horizontal: 60),
+                          child: LinearProgressIndicator(
+                            color: Constants.primaryColor,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Center(
+                          child: Text("Posting"),
+                        ),
+                      ],
                     )
                   : Container(),
             ],

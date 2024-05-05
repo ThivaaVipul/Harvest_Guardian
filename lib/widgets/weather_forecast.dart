@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,15 +24,22 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   String _apiUrl = '';
   Map<String, dynamic> _weatherData = {};
   String _city = '';
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
     _checkLocationPermission();
     _getLocationAndWeather();
-    Timer.periodic(const Duration(minutes: 10), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 10), (timer) {
       _getLocationAndWeather();
     });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   void _checkLocationPermission() async {
@@ -42,20 +50,22 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   }
 
   Future<void> _getLocationAndWeather() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-          timeLimit: const Duration(seconds: 10));
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(position.latitude, position.longitude);
-      setState(() {
-        _city = placemarks[0].locality!;
-        _apiUrl =
-            'https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$openWeatherMapAPI';
-      });
-      _fetchWeatherData();
-    } catch (e) {
-      Fluttertoast.showToast(msg: 'Error getting location');
+    if (FirebaseAuth.instance.currentUser != null) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+            timeLimit: const Duration(seconds: 10));
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+            position.latitude, position.longitude);
+        setState(() {
+          _city = placemarks[0].locality!;
+          _apiUrl =
+              'https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$openWeatherMapAPI';
+        });
+        _fetchWeatherData();
+      } catch (e) {
+        Fluttertoast.showToast(msg: 'Error getting location');
+      }
     }
   }
 
@@ -77,9 +87,18 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     }
   }
 
+  String getCamelCase(String text) {
+    List<String> words = text.split(' ');
+    for (int i = 0; i < words.length; i++) {
+      words[i] =
+          words[i][0].toUpperCase() + words[i].substring(1).toLowerCase();
+    }
+    return words.join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
       width: double.infinity,
       height: MediaQuery.of(context).size.height / 3,
       margin: const EdgeInsets.all(10.0),
@@ -89,13 +108,15 @@ class _WeatherWidgetState extends State<WeatherWidget> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Constants.primaryColor.withOpacity(0.7),
-            Colors.black38,
+            Constants.primaryColor,
+            Colors.black87,
           ],
         ),
       ),
+      duration: const Duration(milliseconds: 5000),
       child: _weatherData.isNotEmpty
           ? SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -111,7 +132,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                       ),
                     ),
                     Image.network(
-                      'https://openweathermap.org/img/wn/${_weatherData['weather'][0]['icon']}.png',
+                      'https://openweathermap.org/img/wn/${_weatherData['weather'][0]['icon']}@2x.png',
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
@@ -125,7 +146,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'Weather: ${_weatherData['weather'][0]['description']}',
+                      getCamelCase(_weatherData['weather'][0]['description']),
                       style: const TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -133,7 +154,8 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'Updated on: ${DateFormat('HH:mm').format(DateTime.now())}',
+                      DateFormat('EEEE, d MMMM | hh:mm a')
+                          .format(DateTime.now()),
                       style: const TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -143,28 +165,35 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 ),
               ),
             )
-          : const Center(
-              child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                    child: Text(
-                  "Fetching Weather Data",
-                  style: TextStyle(fontSize: 24, color: Colors.white),
-                )),
-                Center(
-                    child: Text(
-                  "🌥️",
-                  style: TextStyle(fontSize: 34, color: Colors.white),
-                )),
-                SizedBox(
-                  height: 20,
+          : AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Constants.primaryColor,
+                    Colors.black38,
+                  ],
                 ),
-                CircularProgressIndicator(
-                  color: Colors.white,
+              ),
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Fetching Weather Data 🌥️",
+                      style: TextStyle(fontSize: 24, color: Colors.white),
+                    ),
+                    SizedBox(height: 20),
+                    CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ],
                 ),
-              ],
-            )),
+              ),
+            ),
     );
   }
 }

@@ -6,7 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/authentication/forgot_password_screen.dart';
 import 'package:harvest_guardian/screens/authentication/signup_screen.dart';
-import 'package:harvest_guardian/screens/home_screen.dart';
+import 'package:harvest_guardian/screens/navigator.dart';
 import 'package:harvest_guardian/widgets/custom_textfield.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:validators/validators.dart' as validator;
@@ -253,7 +253,7 @@ class _SignInState extends State<SignIn> {
       Navigator.pushReplacement(
         context,
         PageTransition(
-          child: const HomeScreen(),
+          child: const PageNavigator(),
           type: PageTransitionType.bottomToTop,
         ),
       );
@@ -308,6 +308,7 @@ class _SignInState extends State<SignIn> {
     final FirebaseAuth auth = FirebaseAuth.instance;
 
     try {
+      await googleSignIn.signOut();
       final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
       if (googleSignInAccount != null) {
@@ -322,16 +323,14 @@ class _SignInState extends State<SignIn> {
         final User? user = userCredential.user;
 
         if (user != null) {
-          // User signed in successfully, navigate to home screen or do something else
           Navigator.pushReplacement(
             context,
             PageTransition(
-              child: const HomeScreen(),
+              child: const PageNavigator(),
               type: PageTransitionType.bottomToTop,
             ),
           );
         } else {
-          // Handle sign in failure
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Failed to sign in with Google.'),
@@ -343,7 +342,6 @@ class _SignInState extends State<SignIn> {
           });
         }
       } else {
-        // Handle sign in failure
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to sign in with Google.'),
@@ -355,7 +353,6 @@ class _SignInState extends State<SignIn> {
         });
       }
     } catch (e) {
-      // Handle sign in errors
       print('Error signing in with Google: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

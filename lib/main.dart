@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:harvest_guardian/screens/home_screen.dart';
+import 'package:harvest_guardian/screens/navigator.dart';
 import 'package:harvest_guardian/screens/onboarding_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, AsyncSnapshot<User?> snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
-              return const HomeScreen();
+              return const PageNavigator();
             } else if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),

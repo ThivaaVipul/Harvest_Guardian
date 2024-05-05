@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/add_blog_post_screen.dart';
 import 'package:harvest_guardian/screens/comments.dart';
-import 'package:harvest_guardian/screens/home_screen.dart';
 import 'package:harvest_guardian/utils/blog_comment.dart';
 import 'package:harvest_guardian/utils/blogs.dart';
 import 'package:harvest_guardian/widgets/community_post.dart';
@@ -27,11 +26,19 @@ class _CommunityPageState extends State<CommunityPage> {
   void initState() {
     super.initState();
     _getData();
+    _setupBlogsListener();
+  }
+
+  @override
+  void dispose() {
+    DatabaseReference blogsRef = FirebaseDatabase.instance.ref().child('Blogs');
+    blogsRef.onValue.listen((event) {}).cancel();
+
+    super.dispose();
   }
 
   Future<void> _handleRefresh() async {
     try {
-      // Fetch new data
       List<Blogs> newData = await _getData();
 
       setState(() {
@@ -130,6 +137,43 @@ class _CommunityPageState extends State<CommunityPage> {
     return comments;
   }
 
+  void _setupBlogsListener() {
+    DatabaseReference blogsRef = FirebaseDatabase.instance.ref().child('Blogs');
+
+    blogsRef.onValue.listen((event) {
+      var data = event.snapshot.value;
+      if (data != null && data is Map<dynamic, dynamic>) {
+        List<Blogs> newData = [];
+        data.forEach((key, value) {
+          List<String> likes = _parseLikes(value['likes']);
+          List<BlogComment> comments = _parseComments(value['comments']);
+
+          newData.add(
+            Blogs(
+              desc: value['desc'],
+              title: value['title'],
+              image: value['image'],
+              postId: key,
+              likes: likes,
+              comments: comments,
+              timestamp: value['timestamp'],
+              userEmail: value['userEmail'],
+            ),
+          );
+        });
+        setState(() {
+          blogsData = newData;
+        });
+      } else {
+        setState(() {
+          blogsData = [];
+        });
+      }
+    }, onError: (error) {
+      Fluttertoast.showToast(msg: "Error fetching blog posts: $error");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,22 +182,6 @@ class _CommunityPageState extends State<CommunityPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              PageTransition(
-                child: const HomeScreen(),
-                type: PageTransitionType.bottomToTop,
-              ),
-            );
-          },
-          icon: Icon(
-            Icons.arrow_back,
-            size: 30,
-            color: Constants.primaryColor,
-          ),
-        ),
         title: Text(
           'Harvest Guardian Community',
           style: TextStyle(
@@ -220,8 +248,14 @@ class _CommunityPageState extends State<CommunityPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Constants.primaryColor,
-        icon: const Icon(Icons.edit),
-        label: const Text('Ask Community'),
+        icon: const Icon(
+          Icons.edit,
+          color: Colors.white,
+        ),
+        label: const Text(
+          'Ask Community',
+          style: TextStyle(color: Colors.white),
+        ),
         onPressed: () {
           Navigator.push(
             context,

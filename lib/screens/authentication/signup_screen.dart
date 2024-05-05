@@ -1,11 +1,12 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print, use_key_in_widget_constructors
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/authentication/signin_screen.dart';
-import 'package:harvest_guardian/screens/home_screen.dart';
+import 'package:harvest_guardian/screens/navigator.dart';
 import 'package:harvest_guardian/widgets/custom_textfield.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:validators/validators.dart' as validator;
@@ -232,17 +233,20 @@ class _SignUpState extends State<SignUp> {
     FocusScope.of(context).unfocus();
     final auth = FirebaseAuth.instance;
     try {
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+      await auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text,
       );
 
-      await userCredential.user!.updateDisplayName(usernameController.text);
+      await FirebaseAuth.instance.currentUser!
+          .updateDisplayName(usernameController.text);
+
+      await addDataOfNewUser(FirebaseAuth.instance.currentUser!);
 
       Navigator.pushReplacement(
         context,
         PageTransition(
-          child: const HomeScreen(),
+          child: const PageNavigator(),
           type: PageTransitionType.bottomToTop,
         ),
       );
@@ -284,52 +288,93 @@ class _SignUpState extends State<SignUp> {
       _loading = true;
     });
     FocusScope.of(context).unfocus();
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final FirebaseAuth auth = FirebaseAuth.instance;
+
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
       final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
             await googleSignInAccount.authentication;
-
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
         );
+        final UserCredential userCredential =
+            await auth.signInWithCredential(credential);
+        final User? user = userCredential.user;
 
-        final UserCredential authResult =
-            await FirebaseAuth.instance.signInWithCredential(credential);
+        if (user != null) {
+          if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+            addDataOfNewUser(user);
+          }
 
-        // Check if the user is new, and if so, proceed with additional signup steps
-        if (authResult.additionalUserInfo!.isNewUser) {
-          // Perform additional signup steps if needed
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+              child: const PageNavigator(),
+              type: PageTransitionType.bottomToTop,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to sign in with Google.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          setState(() {
+            _loading = false;
+          });
         }
-
-        // Navigate to the home screen after successful sign-up
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            child: const HomeScreen(),
-            type: PageTransitionType.bottomToTop,
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to sign in with Google.'),
+            backgroundColor: Colors.red,
           ),
         );
-      } else {
-        // User canceled Google sign-in
-        print("Google sign-in canceled");
+        setState(() {
+          _loading = false;
+        });
       }
     } catch (e) {
-      setState(() {
-        _loading = false;
-      });
-      // Handle sign-in with Google errors here
-      print("Error signing in with Google: $e");
+      print('Error signing in with Google: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-              'An unexpected error occurred while signing in with Google.'),
+          content: Text('An unexpected error occurred.'),
           backgroundColor: Colors.red,
         ),
       );
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> addDataOfNewUser(User user) async {
+    try {
+      print('User: $user');
+      print('Email: ${user.email}');
+      print('DisplayName: ${user.displayName}');
+      print('PhotoUrl: ${user.photoURL}');
+
+      DatabaseReference userRef =
+          FirebaseDatabase.instance.ref().child('Users').child(user.uid);
+
+      String photoUrl = user.photoURL ??
+          'https://st4.depositphotos.com/1496387/40483/v/450/depositphotos_404831150-stock-illustration-happy-farmer-logo-agriculture-natural.jpg';
+
+      await userRef.set({
+        'email': user.email,
+        'displayName': user.displayName,
+        'photoUrl': photoUrl,
+      });
+    } catch (e) {
+      print('Error adding user data: $e');
+      rethrow;
     }
   }
 }

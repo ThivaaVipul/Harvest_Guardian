@@ -55,6 +55,7 @@ dependencies:
   geocoding: ^3.0.0
   permission_handler: ^10.3.0
   country_picker: ^2.0.25
+  curved_navigation_bar: ^1.0.3
 
 dev_dependencies:
   flutter_test:

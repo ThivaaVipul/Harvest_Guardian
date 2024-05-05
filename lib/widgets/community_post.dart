@@ -198,8 +198,24 @@ class _SinglePostState extends State<SinglePost> {
     });
   }
 
+  void deletePostAndNavigateBack() {
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference
+        .child('Blogs')
+        .child(widget.data.postId)
+        .remove()
+        .then((_) {
+      Fluttertoast.showToast(msg: "Post is successfully deleted");
+      Navigator.popUntil(context, ModalRoute.withName('/'));
+    }).catchError((error) {
+      Fluttertoast.showToast(msg: "Failed to delete post: $error");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool currentUserIsAuthor =
+        FirebaseAuth.instance.currentUser?.email == widget.data.userEmail;
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -210,6 +226,57 @@ class _SinglePostState extends State<SinglePost> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (currentUserIsAuthor && widget.isCommentScreen)
+            GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Confirm Delete"),
+                      content: const Text(
+                          "Are you sure you want to delete this post?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("No"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            deletePostAndNavigateBack();
+                          },
+                          child: const Text("Yes"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      "Delete",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(width: 5),
+                    Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           Stack(
             children: [
               Hero(
@@ -354,7 +421,7 @@ class _SinglePostState extends State<SinglePost> {
                   GestureDetector(
                     onTap: () {
                       if (!widget.isCommentScreen) {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           PageTransition(
                               child: Comments(
