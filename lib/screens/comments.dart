@@ -12,6 +12,9 @@ class CommentItem extends StatelessWidget {
   final String userEmail;
   final String commentText;
   final int timestamp;
+  final int votes;
+  final VoidCallback onVotePressed;
+  final bool userHasVoted;
 
   const CommentItem({
     super.key,
@@ -19,6 +22,9 @@ class CommentItem extends StatelessWidget {
     required this.userEmail,
     required this.commentText,
     required this.timestamp,
+    required this.votes,
+    required this.onVotePressed,
+    required this.userHasVoted,
   });
 
   @override
@@ -31,12 +37,12 @@ class CommentItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(width: 14),
           CircleAvatar(
             backgroundImage: NetworkImage(profilePicUrl),
-            radius: 20,
+            radius: 30,
           ),
           const SizedBox(width: 24),
           Expanded(
@@ -68,6 +74,37 @@ class CommentItem extends StatelessWidget {
               ],
             ),
           ),
+          Row(
+            children: [
+              Column(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.arrow_upward,
+                      color:
+                          userHasVoted ? Constants.primaryColor : Colors.grey,
+                      size: 40,
+                    ),
+                    onPressed: onVotePressed,
+                  ),
+                  Text(
+                    "UpVote",
+                    style: TextStyle(
+                        color: userHasVoted
+                            ? Constants.primaryColor
+                            : Colors.grey),
+                  ),
+                ],
+              ),
+              Text(
+                votes.toString(),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Constants.primaryColor,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -76,7 +113,8 @@ class CommentItem extends StatelessWidget {
 
 class Comments extends StatefulWidget {
   final SinglePost blogPost;
-  const Comments({super.key, Key? key2, required this.blogPost});
+
+  const Comments({super.key, required this.blogPost});
 
   @override
   State<Comments> createState() => _CommentsState();
@@ -112,6 +150,8 @@ class _CommentsState extends State<Comments> {
       'text': commentText,
       'timestamp': timestamp,
       'userEmail': currentUserEmail,
+      'votes': 0,
+      'votedUsers': [], // Initialize an empty list for voted users
     };
 
     try {
@@ -154,11 +194,16 @@ class _CommentsState extends State<Comments> {
           String commentText = commentValue['text'] ?? '';
           int timestamp = commentValue['timestamp'] ?? 0;
           String userEmail = commentValue['userEmail'] ?? '';
+          int votes = commentValue['votes'] ?? 0;
+          List<String> votedUsers =
+              List<String>.from(commentValue['votedUsers'] ?? []);
 
           extractedComments.add(BlogComment(
             commentText: commentText,
             timestamp: timestamp,
             userEmail: userEmail,
+            votes: votes,
+            votedUsers: votedUsers,
           ));
         } else {
           Fluttertoast.showToast(
@@ -166,7 +211,13 @@ class _CommentsState extends State<Comments> {
         }
       }
 
-      extractedComments.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      extractedComments.sort((a, b) {
+        if (a.votes != b.votes) {
+          return b.votes.compareTo(a.votes);
+        } else {
+          return b.timestamp.compareTo(a.timestamp);
+        }
+      });
 
       comments.addAll(extractedComments);
     }
@@ -212,8 +263,7 @@ class _CommentsState extends State<Comments> {
       List<BlogComment> updatedComments = _parseComments(data);
 
       setState(() {
-        widget.blogPost.data.comments =
-            updatedComments; // Update the comments list
+        widget.blogPost.data.comments = updatedComments;
       });
     }, onError: (error) {
       Fluttertoast.showToast(msg: "Error fetching comments: $error");
@@ -241,6 +291,56 @@ class _CommentsState extends State<Comments> {
       }
     } catch (e) {
       return null;
+    }
+  }
+
+  Future<void> voteForComment(int index) async {
+    BlogComment comment = widget.blogPost.data.comments[index];
+    DatabaseReference databaseReference = FirebaseDatabase.instance
+        .ref()
+        .child('Blogs')
+        .child(widget.blogPost.data.postId)
+        .child('comments');
+
+    String currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
+
+    try {
+      var commentSnapshot = await databaseReference
+          .orderByChild('timestamp')
+          .equalTo(comment.timestamp)
+          .once();
+
+      if (commentSnapshot.snapshot.value != null) {
+        String commentKey = commentSnapshot.snapshot.children.first.key!;
+        List<String> votedUsers = List<String>.from(comment.votedUsers);
+
+        if (votedUsers.contains(currentUserEmail)) {
+          // If the user has already voted, remove the vote
+          votedUsers.remove(currentUserEmail);
+        } else {
+          // If the user has not voted, add the vote
+          votedUsers.add(currentUserEmail);
+        }
+
+        int updatedVotes = votedUsers.length;
+
+        await databaseReference
+            .child(commentKey)
+            .update({'votes': updatedVotes, 'votedUsers': votedUsers});
+
+        var snapshot = await databaseReference.once();
+        var data = snapshot.snapshot.value;
+
+        List<BlogComment> updatedComments = _parseComments(data);
+
+        setState(() {
+          widget.blogPost.data.comments = updatedComments;
+        });
+
+        Fluttertoast.showToast(msg: 'Voted successfully');
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Error voting: $e');
     }
   }
 
@@ -314,6 +414,12 @@ class _CommentsState extends State<Comments> {
                                 userData['displayName'] ?? comment.userEmail,
                             commentText: comment.commentText,
                             timestamp: comment.timestamp,
+                            votes: comment.votes,
+                            userHasVoted: comment.votedUsers.contains(
+                                FirebaseAuth.instance.currentUser?.email),
+                            onVotePressed: () {
+                              voteForComment(index);
+                            },
                           );
                         },
                       );

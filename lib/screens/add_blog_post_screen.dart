@@ -177,6 +177,7 @@ class _AddBlogPostState extends State<AddBlogPost> {
                     color: Constants.primaryColor,
                     fontSize: 16,
                   ),
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     labelStyle: TextStyle(
                       color: Constants.primaryColor,
@@ -211,6 +212,7 @@ class _AddBlogPostState extends State<AddBlogPost> {
                     color: Constants.primaryColor,
                     fontSize: 16,
                   ),
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     labelStyle: TextStyle(
                       color: Constants.primaryColor,

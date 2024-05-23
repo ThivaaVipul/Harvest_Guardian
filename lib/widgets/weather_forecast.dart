@@ -44,8 +44,12 @@ class _WeatherWidgetState extends State<WeatherWidget> {
 
   void _checkLocationPermission() async {
     var status = await Permission.location.status;
-    if (!status.isGranted) {
-      await Permission.location.request();
+    if (status.isDenied || status.isPermanentlyDenied) {
+      if (await Permission.location.request().isGranted) {
+        _getLocationAndWeather();
+      } else {
+        Fluttertoast.showToast(msg: 'Location permission is required');
+      }
     }
   }
 
@@ -58,7 +62,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         List<Placemark> placemarks = await placemarkFromCoordinates(
             position.latitude, position.longitude);
         setState(() {
-          _city = placemarks[0].locality!;
+          _city = placemarks[0].locality ?? 'Unknown Location';
           _apiUrl =
               'https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$openWeatherMapAPI';
         });
@@ -80,7 +84,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
           _weatherData['main']['temp'] = celsiusTemperature.toStringAsFixed(2);
         });
       } else {
-        throw Exception('Failed to load weather data');
+        Fluttertoast.showToast(msg: 'Failed to load weather data');
       }
     } catch (e) {
       Fluttertoast.showToast(msg: 'Error fetching weather data');

@@ -8,6 +8,7 @@ import 'package:harvest_guardian/utils/blog_comment.dart';
 import 'package:harvest_guardian/utils/blogs.dart';
 import 'package:harvest_guardian/widgets/community_post.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
@@ -75,6 +76,8 @@ class _CommunityPageState extends State<CommunityPage> {
             ),
           );
         });
+        newData.sort(
+            (a, b) => b.timestamp.compareTo(a.timestamp)); // Sort by timestamp
         return newData;
       } else {
         Fluttertoast.showToast(msg: "No Posts Uploaded Yet");
@@ -118,11 +121,16 @@ class _CommunityPageState extends State<CommunityPage> {
           String commentText = commentValue['text'] ?? '';
           int timestamp = commentValue['timestamp'] ?? 0;
           String userEmail = commentValue['userEmail'] ?? '';
+          int votes = commentValue['votes'] ?? 0;
+          List<String> votedUsers =
+              List<String>.from(commentValue['votedUsers'] ?? []);
 
           extractedComments.add(BlogComment(
             commentText: commentText,
             timestamp: timestamp,
             userEmail: userEmail,
+            votes: votes,
+            votedUsers: votedUsers,
           ));
         } else {
           Fluttertoast.showToast(
@@ -161,13 +169,18 @@ class _CommunityPageState extends State<CommunityPage> {
             ),
           );
         });
-        setState(() {
-          blogsData = newData;
-        });
+        newData.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        if (mounted) {
+          setState(() {
+            blogsData = newData;
+          });
+        }
       } else {
-        setState(() {
-          blogsData = [];
-        });
+        if (mounted) {
+          setState(() {
+            blogsData = [];
+          });
+        }
       }
     }, onError: (error) {
       Fluttertoast.showToast(msg: "Error fetching blog posts: $error");
@@ -194,20 +207,9 @@ class _CommunityPageState extends State<CommunityPage> {
       body: RefreshIndicator(
         key: _refreshIndicatorKey,
         onRefresh: _handleRefresh,
-        child: FutureBuilder<List<Blogs>>(
-          future: _getData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(
-                  color: Constants.primaryColor,
-                ),
-              );
-            } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              // Sort the blog posts based on timestamp
-              snapshot.data!.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
+        child: blogsData.isNotEmpty
+            ? ListView.builder(
+                itemCount: blogsData.length,
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return GestureDetector(
@@ -217,7 +219,7 @@ class _CommunityPageState extends State<CommunityPage> {
                         PageTransition(
                           child: Comments(
                             blogPost: SinglePost(
-                              data: snapshot.data![index],
+                              data: blogsData[index],
                               isCommentScreen: true,
                             ),
                           ),
@@ -226,25 +228,13 @@ class _CommunityPageState extends State<CommunityPage> {
                       );
                     },
                     child: SinglePost(
-                      data: snapshot.data![index],
+                      data: blogsData[index],
                       isCommentScreen: false,
                     ),
                   );
                 },
-              );
-            } else {
-              return Center(
-                child: Text(
-                  "No Posts Uploaded Yet",
-                  style: TextStyle(
-                    color: Constants.primaryColor,
-                    fontSize: 18,
-                  ),
-                ),
-              );
-            }
-          },
-        ),
+              )
+            : _buildShimmerLoading(), // Render shimmer loading if blogsData is empty
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Constants.primaryColor,
@@ -266,6 +256,105 @@ class _CommunityPageState extends State<CommunityPage> {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Colors.grey[300]!, width: 1),
+      ),
+      margin: const EdgeInsets.all(15.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildShimmerImage(),
+          const SizedBox(height: 15),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildShimmerText(width: 150.0, height: 20.0),
+                const SizedBox(height: 5),
+                _buildShimmerText(width: 300.0, height: 18.0),
+                const SizedBox(height: 5),
+                _buildShimmerText(width: 200.0, height: 14.0),
+                const SizedBox(height: 5),
+                _buildShimmerText(width: 150.0, height: 14.0),
+              ],
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(width: 10),
+              _buildShimmerLikeCommentShare(),
+              const SizedBox(width: 20),
+              _buildShimmerLikeCommentShare(),
+              const SizedBox(width: 20),
+              _buildShimmerLikeCommentShare(),
+            ],
+          ),
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerImage() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        width: double.infinity,
+        height: 250.0,
+        color: Colors.grey[300]!,
+      ),
+    );
+  }
+
+  Widget _buildShimmerText({required double width, required double height}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        width: width,
+        height: height,
+        color: Colors.grey[300]!,
+      ),
+    );
+  }
+
+  Widget _buildShimmerLikeCommentShare() {
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: Colors.grey[300]!,
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ),
+        const SizedBox(height: 5),
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            width: 30,
+            height: 10,
+            color: Colors.grey[300]!,
+          ),
+        ),
+      ],
     );
   }
 }

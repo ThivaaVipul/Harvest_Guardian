@@ -1,7 +1,9 @@
 import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:image_picker/image_picker.dart';
@@ -171,6 +173,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         if (_displayName != null) {
                           await FirebaseAuth.instance.currentUser!
                               .updateDisplayName(_displayName!);
+                          final userUid =
+                              FirebaseAuth.instance.currentUser!.uid;
+                          await FirebaseDatabase.instance
+                              .ref()
+                              .child('Users')
+                              .child(userUid)
+                              .update({
+                            'displayName': _displayName,
+                          });
                         }
                         if (_pickedImage != null) {
                           final storageRef = FirebaseStorage.instance
@@ -186,6 +197,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           });
                           await FirebaseAuth.instance.currentUser!
                               .updatePhotoURL(_userPhotoURL!);
+                          final userUid =
+                              FirebaseAuth.instance.currentUser!.uid;
+                          await FirebaseDatabase.instance
+                              .ref()
+                              .child('Users')
+                              .child(userUid)
+                              .update({
+                            'photoUrl': _userPhotoURL,
+                          });
                         }
                         Fluttertoast.showToast(
                           msg: 'Profile updated successfully!',

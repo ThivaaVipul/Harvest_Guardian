@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/plant_disease_detection_screen.dart';
+import 'package:harvest_guardian/screens/weather_forecast_screen.dart';
 import 'package:harvest_guardian/widgets/weather_forecast.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -50,6 +51,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: const Text(
                   "Predict Disease",
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: const WeatherDashboard(),
+                      type: PageTransitionType.bottomToTop,
+                    ),
+                  );
+                },
+                child: const Text(
+                  "Weather Dashboard",
                 ),
               ),
             ],

@@ -123,10 +123,11 @@ class _SinglePostState extends State<SinglePost> {
 
     var data = snapshot.snapshot.value;
     List<String> updatedLikes = _parseLikes(data);
-
-    setState(() {
-      widget.data.likes = updatedLikes;
-    });
+    if (mounted) {
+      setState(() {
+        widget.data.likes = updatedLikes;
+      });
+    }
 
     _updateLikeCount();
   }
