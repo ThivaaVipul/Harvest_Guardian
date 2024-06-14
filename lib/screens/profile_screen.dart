@@ -4,6 +4,8 @@ import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/authentication/signin_screen.dart';
 import 'package:harvest_guardian/screens/edit_profile_screen.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ProfilePage extends StatefulWidget {
   // ignore: use_key_in_widget_constructors
@@ -84,6 +86,8 @@ class UserProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -109,8 +113,7 @@ class UserProfileWidget extends StatelessWidget {
                         },
                       ),
                       title: Text(
-                        FirebaseAuth.instance.currentUser!.displayName
-                            .toString(),
+                        user.displayName.toString(),
                         style: TextStyle(
                           color: Constants.primaryColor,
                           fontSize: 20,
@@ -123,9 +126,23 @@ class UserProfileWidget extends StatelessWidget {
                         Navigator.pop(context);
                       },
                       child: Center(
-                        child: Image.network(
-                          FirebaseAuth.instance.currentUser!.photoURL ??
+                        child: CachedNetworkImage(
+                          imageUrl: user.photoURL ??
                               'https://st4.depositphotos.com/1496387/40483/v/450/depositphotos_404831150-stock-illustration-happy-farmer-logo-agriculture-natural.jpg',
+                          placeholder: (context, url) => Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              width: 200,
+                              height: 200,
+                              decoration: const BoxDecoration(
+                                color: Colors.grey,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
                         ),
                       ),
                     ),
@@ -134,33 +151,47 @@ class UserProfileWidget extends StatelessWidget {
               ),
             );
           },
-          child: Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: NetworkImage(
-                  FirebaseAuth.instance.currentUser!.photoURL ??
-                      'https://st4.depositphotos.com/1496387/40483/v/450/depositphotos_404831150-stock-illustration-happy-farmer-logo-agriculture-natural.jpg',
+          child: CachedNetworkImage(
+            imageUrl: user!.photoURL ??
+                'https://st4.depositphotos.com/1496387/40483/v/450/depositphotos_404831150-stock-illustration-happy-farmer-logo-agriculture-natural.jpg',
+            imageBuilder: (context, imageProvider) => Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.cover,
                 ),
-                fit: BoxFit.cover,
               ),
             ),
+            placeholder: (context, url) => Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: const BoxDecoration(
+                  color: Colors.grey,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
         ),
         const SizedBox(
           height: 20,
         ),
         Text(
-          FirebaseAuth.instance.currentUser!.displayName ?? '',
+          user.displayName ?? '',
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(
           height: 10,
         ),
         Text(
-          FirebaseAuth.instance.currentUser!.email ?? '',
+          user.email ?? '',
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(

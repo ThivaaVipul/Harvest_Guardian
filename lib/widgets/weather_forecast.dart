@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui'; // for the blur effect
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,6 +11,7 @@ import 'package:harvest_guardian/data/services/keys.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shimmer/shimmer.dart';
 
 class WeatherWidget extends StatefulWidget {
   const WeatherWidget({super.key});
@@ -169,32 +171,65 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 ),
               ),
             )
-          : AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Constants.primaryColor,
-                    Colors.black38,
-                  ],
-                ),
-              ),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Fetching Weather Data 🌥️",
-                      style: TextStyle(fontSize: 24, color: Colors.white),
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Constants.primaryColor.withOpacity(0.2),
+                        Colors.black38.withOpacity(0.2),
+                      ],
                     ),
-                    SizedBox(height: 20),
-                    CircularProgressIndicator(
-                      color: Colors.white,
+                  ),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.grey.withOpacity(0.3),
+                    highlightColor: Colors.grey.withOpacity(0.1),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 200,
+                            height: 28,
+                            color: Colors.white.withOpacity(0.2),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            width: 100,
+                            height: 100,
+                            color: Colors.white.withOpacity(0.2),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            width: 150,
+                            height: 22,
+                            color: Colors.white.withOpacity(0.2),
+                          ),
+                          const SizedBox(height: 5),
+                          Container(
+                            width: 120,
+                            height: 18,
+                            color: Colors.white.withOpacity(0.2),
+                          ),
+                          const SizedBox(height: 5),
+                          Container(
+                            width: 200,
+                            height: 18,
+                            color: Colors.white.withOpacity(0.2),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -34,16 +34,15 @@ class _CommunityPageState extends State<CommunityPage> {
   void dispose() {
     DatabaseReference blogsRef = FirebaseDatabase.instance.ref().child('Blogs');
     blogsRef.onValue.listen((event) {}).cancel();
-
     super.dispose();
   }
 
   Future<void> _handleRefresh() async {
     try {
       List<Blogs> newData = await _getData();
-
       setState(() {
-        blogsData = newData;
+        blogsData.clear();
+        blogsData.addAll(newData);
       });
 
       Fluttertoast.showToast(msg: "Blog refreshed successfully");
@@ -260,46 +259,77 @@ class _CommunityPageState extends State<CommunityPage> {
   }
 
   Widget _buildShimmerLoading() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Colors.grey[300]!, width: 1),
-      ),
-      margin: const EdgeInsets.all(15.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildShimmerImage(),
-          const SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: Colors.grey[300]!, width: 1),
+        ),
+        margin: const EdgeInsets.all(15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildShimmerImage(),
+            const SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildShimmerText(width: 150.0, height: 20.0),
+                  const SizedBox(height: 5),
+                  _buildShimmerText(width: 300.0, height: 18.0),
+                  const SizedBox(height: 5),
+                  _buildShimmerText(width: 200.0, height: 14.0),
+                  const SizedBox(height: 5),
+                  _buildShimmerText(width: 150.0, height: 14.0),
+                ],
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _buildShimmerText(width: 150.0, height: 20.0),
-                const SizedBox(height: 5),
-                _buildShimmerText(width: 300.0, height: 18.0),
-                const SizedBox(height: 5),
-                _buildShimmerText(width: 200.0, height: 14.0),
-                const SizedBox(height: 5),
-                _buildShimmerText(width: 150.0, height: 14.0),
+                const SizedBox(width: 10),
+                _buildShimmerLikeCommentShare(),
+                const SizedBox(width: 20),
+                _buildShimmerLikeCommentShare(),
+                const SizedBox(width: 20),
+                _buildShimmerLikeCommentShare(),
               ],
             ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(width: 10),
-              _buildShimmerLikeCommentShare(),
-              const SizedBox(width: 20),
-              _buildShimmerLikeCommentShare(),
-              const SizedBox(width: 20),
-              _buildShimmerLikeCommentShare(),
-            ],
-          ),
-          const SizedBox(height: 10),
-        ],
+            const SizedBox(height: 10),
+            _buildShimmerImage(),
+            const SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildShimmerText(width: 150.0, height: 20.0),
+                  const SizedBox(height: 5),
+                  _buildShimmerText(width: 300.0, height: 18.0),
+                  const SizedBox(height: 5),
+                  _buildShimmerText(width: 200.0, height: 14.0),
+                  const SizedBox(height: 5),
+                  _buildShimmerText(width: 150.0, height: 14.0),
+                ],
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(width: 10),
+                _buildShimmerLikeCommentShare(),
+                const SizedBox(width: 20),
+                _buildShimmerLikeCommentShare(),
+                const SizedBox(width: 20),
+                _buildShimmerLikeCommentShare(),
+              ],
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }

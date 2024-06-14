@@ -58,6 +58,7 @@ dependencies:
   curved_navigation_bar: ^1.0.3
   fl_chart: ^0.40.0
   shimmer: ^2.0.0
+  cached_network_image: ^3.2.0
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +86,7 @@ flutter:
     - assets/images/
     - assets/plant_disease_model.tflite
     - assets/plant_disease_labels.txt
+    - assets/disease_data.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -6,6 +6,8 @@ import 'package:harvest_guardian/screens/weather_forecast_screen.dart';
 import 'package:harvest_guardian/widgets/weather_forecast.dart';
 import 'package:page_transition/page_transition.dart';
 
+import 'disease_details_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -68,6 +70,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: const Text(
                   "Weather Dashboard",
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: const DiseaseDetailsPage(),
+                      type: PageTransitionType.bottomToTop,
+                    ),
+                  );
+                },
+                child: const Text(
+                  "Disease Details",
                 ),
               ),
             ],

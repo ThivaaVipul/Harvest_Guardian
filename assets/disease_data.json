@@ -1,0 +1,230 @@
+[
+    {
+        "name": "Apple scab",
+        "description": "Apple scab is a fungal disease caused by Venturia inaequalis, leading to dark, scabby lesions on leaves, fruit, and twigs.",
+        "cure": "Use fungicides such as captan, sulfur, or myclobutanil. Implement proper sanitation practices by removing fallen leaves and pruning infected twigs.",
+        "img": "https://sorenson-companies.com/wp-content/uploads/2022/04/gettyimages-1198930372-0d897d968a04436d8279ba0b94d371bd.jpg"
+    },
+    {
+        "name": "Apple black rot",
+        "description": "Black rot of apple is caused by the fungus Botryosphaeria obtusa, leading to rotted fruit, leaf spots, and cankers on branches.",
+        "cure": "Prune out and destroy infected branches. Apply fungicides like captan or myclobutanil. Maintain tree health with proper fertilization and watering.",
+        "img": "https://gardenerspath.com/wp-content/uploads/2019/08/Frogeye-spots-Botryosphaeria-obtusa-on-apple-leaf-FB.jpg"
+    },
+    {
+        "name": "Apple cedar apple rust",
+        "description": "Cedar apple rust is caused by the fungus Gymnosporangium juniperi-virginianae, resulting in yellow-orange spots on leaves and fruit.",
+        "cure": "Remove nearby cedar trees if possible. Apply fungicides like myclobutanil or sulfur during the growing season.",
+        "img": "https://www.fs.usda.gov/wildflowers/plant-of-the-week/images/cedarapplerust/Gymnosparangium_juniperi-virginianae_23A_lg.jpg"
+    },
+    {
+        "name": "Apple healthy",
+        "description": "A healthy apple tree shows no signs of disease or pests, producing healthy leaves, flowers, and fruit.",
+        "cure": "Maintain proper watering, fertilization, and pruning. Monitor regularly for pests and diseases.",
+        "img": "https://www.realsimple.com/thmb/ctb2f507BTOiT5PoYUjvmcuQfgI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/apples-good-for-you-2000-5d010000cb0e48cfb0f81fad209ac1f9.jpg"
+    },
+    {
+        "name": "Blueberry healthy",
+        "description": "A healthy blueberry plant has vibrant green leaves, strong stems, and produces an abundance of fruit without disease symptoms.",
+        "cure": "Provide adequate water, mulch to conserve moisture, and use fertilizers appropriate for blueberries. Monitor for pests and diseases.",
+        "img": "https://www.thespruce.com/thmb/to7HYXfWoZJxlFuq2rrfVA4fYCI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-939780810-b70f98b7e9e944c2a6d7593e8b59422f.jpg"
+    },
+    {
+        "name": "Cherry including sour powdery mildew",
+        "description": "Powdery mildew on cherry is caused by Podosphaera clandestina, leading to white, powdery growth on leaves and fruit.",
+        "cure": "Apply fungicides like sulfur or myclobutanil. Improve air circulation through proper spacing and pruning.",
+        "img": "https://i0.wp.com/blog.pestprophet.com/wp-content/uploads/2018/12/powdery-tcherry1_zoom.jpg?fit=900%2C1200&ssl=1"
+    },
+    {
+        "name": "Cherry including sour healthy",
+        "description": "A healthy cherry tree shows no signs of disease or pests and produces healthy leaves, flowers, and fruit.",
+        "cure": "Regularly water, fertilize, and prune cherry trees. Monitor for pests and diseases.",
+        "img": "https://goodfruit.com/wp-content/uploads/bingLitteCherryBrosi_1049-1.jpg"
+    },
+    {
+        "name": "Corn maize cercospora leaf spot gray leaf spot",
+        "description": "Gray leaf spot is caused by Cercospora zeae-maydis, resulting in rectangular lesions on leaves that can reduce photosynthesis.",
+        "cure": "Rotate crops and use resistant hybrids. Apply fungicides like strobilurins or triazoles if necessary.",
+        "img": "https://cs-assets.bayer.com/is/image/bayer/2019090405?ts=1691532217250&dpr=off"
+    },
+    {
+        "name": "Corn maize common rust",
+        "description": "Common rust in corn is caused by Puccinia sorghi, leading to reddish-brown pustules on leaves.",
+        "cure": "Plant resistant varieties. Apply fungicides if severe, particularly during tasseling and silking.",
+        "img":"https://content.peat-cloud.com/w400/common-rust-of-maize-maize-1.jpg"
+    },
+    {
+        "name": "Corn maize northern leaf blight",
+        "description": "Northern leaf blight is caused by Exserohilum turcicum, resulting in long, elliptical lesions on leaves.",
+        "cure": "Use resistant hybrids and practice crop rotation. Apply fungicides if needed.",
+        "img":"https://assets.syngenta.ca/images/pest/125/ca2020_northern_corn_leaf_blight_2.jpg"
+    },
+    {
+        "name": "Corn maize healthy",
+        "description": "A healthy corn plant has robust green leaves, strong stalks, and produces ample ears of corn without disease symptoms.",
+        "cure": "Ensure proper watering, fertilization, and pest monitoring. Use resistant varieties and rotate crops.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2ID4zTc-e8okvCjidCNrUz-hmU3amAqRBGg&s"
+    },
+    {
+        "name": "Grape black rot",
+        "description": "Black rot of grape is caused by the fungus Guignardia bidwellii, leading to black lesions on leaves, stems, and fruit.",
+        "cure": "Apply fungicides like mancozeb or myclobutanil. Remove and destroy infected plant parts.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzPlUKQmxZlDimb8NfYIYM_WgN1hKvx9SB6A&s"
+    },
+    {
+        "name": "Grape esca black measles",
+        "description": "Esca, also known as black measles, is a complex disease caused by several fungal pathogens, leading to leaf striping and fruit rot.",
+        "cure": "Prune and destroy infected wood. Use fungicides like thiophanate-methyl and ensure proper vineyard sanitation.",
+        "img":"https://static.wixstatic.com/media/e5076a_9fd186735c5643a8910ff69238a14029~mv2.jpg/v1/fill/w_640,h_600,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/e5076a_9fd186735c5643a8910ff69238a14029~mv2.jpg"
+    },
+    {
+        "name": "Grape leaf blight isariopsis leaf spot",
+        "description": "Isariopsis leaf spot, caused by the fungus Isariopsis clavispora, leads to dark spots on grape leaves.",
+        "cure": "Apply fungicides like copper-based products. Remove and destroy infected leaves.",
+        "img":"https://d3i71xaburhd42.cloudfront.net/7c28cccaae263837f96598c9e26924fa50a083cb/2-Figure3-1.png"
+    },
+    {
+        "name": "Grape healthy",
+        "description": "A healthy grapevine produces lush green leaves, vigorous growth, and plentiful fruit without disease symptoms.",
+        "cure": "Maintain proper watering, fertilization, and pruning practices. Monitor for pests and diseases.",
+        "img":"https://www.foodrepublic.com/img/gallery/15-types-of-grapes-to-know-eat-and-drink/l-intro-1684769284.jpg"
+    },
+    {
+        "name": "Orange haunglongbing citrus greening",
+        "description": "Citrus greening, or Huanglongbing, is a bacterial disease caused by Candidatus Liberibacter species, leading to yellow shoots and bitter, misshapen fruit.",
+        "cure": "There is no cure, but management includes removing infected trees, controlling psyllid vectors, and applying foliar nutrients.",
+        "img":"https://www.aphis.usda.gov/sites/default/files/styles/16_9_ratio/public/citrus-greening-20120120-aphis-db-0065.jpg"
+    },
+    {
+        "name": "Peach bacterial spot",
+        "description": "Bacterial spot of peach is caused by Xanthomonas arboricola pv. pruni, leading to spots on leaves and fruit and defoliation.",
+        "cure": "Apply copper-based bactericides. Use resistant varieties and practice proper sanitation.",
+        "img":"https://www.canr.msu.edu/ipm/uploads/images/Fruit/leavesFruitBacterialspot.jpg"
+    },
+    {
+        "name": "Peach healthy",
+        "description": "A healthy peach tree shows no signs of disease or pests and produces healthy leaves, flowers, and fruit.",
+        "cure": "Provide regular watering, fertilization, and pruning. Monitor for pests and diseases.",
+        "img":"https://m.media-amazon.com/images/I/618QNg0KfFL.jpg"
+    },
+    {
+        "name": "Pepper bell bacterial spot",
+        "description": "Bacterial spot in bell pepper is caused by Xanthomonas campestris pv. vesicatoria, leading to water-soaked spots on leaves and fruit.",
+        "cure": "Use resistant varieties and apply copper-based bactericides. Practice crop rotation and proper sanitation.",
+        "img":"https://extension.wvu.edu/files/50d2bf3d-125f-4b45-9c03-487959bd8344/893x595?cb=0862b40bec913b574f1f05f79f2805c7"
+    },
+    {
+        "name": "Pepper bell healthy",
+        "description": "A healthy bell pepper plant has vibrant green leaves, strong stems, and produces healthy peppers without disease symptoms.",
+        "cure": "Ensure proper watering, fertilization, and pest monitoring. Use resistant varieties and rotate crops.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvCxIwlWxbA8e3bn9PMTHPQaYxky3tilTGCg&s"
+    },
+    {
+        "name": "Potato early blight",
+        "description": "Early blight in potato is caused by Alternaria solani, resulting in concentric ring lesions on leaves and tubers.",
+        "cure": "Apply fungicides like chlorothalonil or mancozeb. Practice crop rotation and remove plant debris.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2LZ9ycQMMkl3FkK8PC4VHXGQA-FrH4x_d7w&s"
+    },
+    {
+        "name": "Potato late blight",
+        "description": "Late blight in potato is caused by Phytophthora infestans, leading to water-soaked lesions on leaves and tubers.",
+        "cure": "Use resistant varieties and apply fungicides like chlorothalonil or copper-based products. Ensure proper field drainage.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJX4rAMMp2ft-EKtrfhn5pnTkzrUc-YqyDGA&s"
+    },
+    {
+        "name": "Potato healthy",
+        "description": "A healthy potato plant has robust green leaves and produces healthy tubers without disease symptoms.",
+        "cure": "Maintain proper watering, fertilization, and pest monitoring. Use resistant varieties and rotate crops.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQv-Zrc1z5ZXUQtfrSwVpsFwOKljrRQNwRi9w&s"
+    },
+    {
+        "name": "Raspberry healthy",
+        "description": "A healthy raspberry plant has lush green leaves, strong canes, and produces abundant fruit without disease symptoms.",
+        "cure": "Provide adequate water, mulch to conserve moisture, and use fertilizers appropriate for raspberries. Monitor for pests and diseases.",
+        "img":"https://www.handpickednursery.com/cdn/shop/products/Heritage-Raspberry-plant_acee8abe-8e3d-465b-9fe8-acbbf4611acf_800x.jpg?v=1673458851"
+    },
+    {
+        "name": "Soybean healthy",
+        "description": "A healthy soybean plant has vigorous growth with green leaves and produces ample pods without disease symptoms.",
+        "cure": "Ensure proper watering, fertilization, and pest monitoring. Use resistant varieties and rotate crops.",
+        "img":"https://plantura.garden/uk/wp-content/uploads/sites/2/2021/10/early-soybean.jpg"
+    },
+    {
+        "name": "Squash powdery mildew",
+        "description": "Powdery mildew on squash is caused by Podosphaera xanthii, leading to white, powdery growth on leaves.",
+        "cure": "Apply fungicides like sulfur or potassium bicarbonate. Improve air circulation and reduce humidity.",
+        "img":"https://www.growingproduce.com/wp-content/uploads/2020/08/powdery_mildew_squash_featured.jpg"
+    },
+    {
+        "name": "Strawberry leaf scorch",
+        "description": "Leaf scorch in strawberries is caused by Diplocarpon earlianum, leading to purple spots on leaves that turn into large dead areas.",
+        "cure": "Remove and destroy infected leaves. Apply fungicides like myclobutanil or captan.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjI8NeiL0kmUr5Y4MAuHJneXkPsjlAGPo4wQ&s"
+    },
+    {
+        "name": "Strawberry healthy",
+        "description": "A healthy strawberry plant has vibrant green leaves and produces abundant, disease-free fruit.",
+        "cure": "Ensure proper watering, fertilization, and pest monitoring. Use resistant varieties and practice crop rotation.",
+        "img":"https://media.post.rvohealth.io/wp-content/uploads/sites/2/2022/06/GRT-harvesting-strawberries-1296x728-header.jpg"
+    },
+    {
+        "name": "Tomato bacterial spot",
+        "description": "Bacterial spot on tomato is caused by Xanthomonas spp., leading to water-soaked spots on leaves and fruit.",
+        "cure": "Apply copper-based bactericides. Use resistant varieties and practice proper sanitation.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTX8GHpeqT7ghG3gWW5x379qvWWk3tIwauKbg&s"
+    },
+    {
+        "name": "Tomato early blight",
+        "description": "Early blight in tomato is caused by Alternaria solani, resulting in concentric ring lesions on leaves and fruit.",
+        "cure": "Apply fungicides like chlorothalonil or mancozeb. Practice crop rotation and remove plant debris.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrIHsfBUtCVB_7M8sxfe6d7juHAUwy_ffrzA&s"
+    },
+    {
+        "name": "Tomato late blight",
+        "description": "Late blight in tomato is caused by Phytophthora infestans, leading to water-soaked lesions on leaves and fruit.",
+        "cure": "Use resistant varieties and apply fungicides like chlorothalonil or copper-based products. Ensure proper field drainage.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTinsCh_IKs65QdgQnGDLO0bLxSG2M8ATaQ2Q&s"
+    },
+    {
+        "name": "Tomato leaf mold",
+        "description": "Leaf mold in tomato is caused by Passalora fulva, resulting in yellow spots on upper leaf surfaces and mold on the undersides.",
+        "cure": "Apply fungicides like chlorothalonil or copper-based products. Improve air circulation and reduce humidity.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShtAQlNhpGebJgNH01lB3UiKFPCdOr9Db5fw&s"
+    },
+    {
+        "name": "Tomato septoria leaf spot",
+        "description": "Septoria leaf spot in tomato is caused by Septoria lycopersici, leading to small, circular spots with dark borders on leaves.",
+        "cure": "Apply fungicides like chlorothalonil or mancozeb. Remove and destroy infected leaves.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8oylhFwmLFqCDAkmevZ-LRIL8dQqQLOsPjg&s"
+    },
+    {
+        "name": "Tomato spider mites two spotted spider mite",
+        "description": "Two-spotted spider mites on tomato cause stippling and bronzing of leaves, leading to defoliation.",
+        "cure": "Use miticides like abamectin or horticultural oils. Maintain proper watering to reduce plant stress.",
+        "img":"https://entomology.ca.uky.edu/files/inline-images/310a.jpg?itok=1J_F2GXG"
+    },
+    {
+        "name": "Tomato target spot",
+        "description": "Target spot in tomato is caused by Corynespora cassiicola, leading to dark, concentric ring lesions on leaves and fruit.",
+        "cure": "Apply fungicides like chlorothalonil or mancozeb. Practice crop rotation and remove plant debris.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFelwqNiiAcMwGzKp_mBn-XP4FB3r4cFC2mg&s"
+    },
+    {
+        "name": "Tomato yellow leaf curl virus",
+        "description": "Yellow leaf curl virus in tomato is spread by whiteflies, causing yellowing and curling of leaves and stunted growth.",
+        "cure": "Control whitefly populations using insecticides or biological control. Use resistant varieties and practice good sanitation.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbxGR_KBj-yUNcfJNOuEzXMddgmPY66I-w-Q&s"
+    },
+    {
+        "name": "Tomato mosaic virus",
+        "description": "Tomato mosaic virus causes mottling and distortion of leaves and reduced fruit quality.",
+        "cure": "There is no cure, but management includes using resistant varieties, practicing crop rotation, and maintaining good sanitation.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSztR5kPfaxKrq7PVVsSb1nuaVckJ-PQw_f0A&s"
+    },
+    {
+        "name": "Tomato healthy",
+        "description": "A healthy tomato plant has robust green leaves, strong stems, and produces healthy tomatoes without disease symptoms.",
+        "cure": "Ensure proper watering, fertilization, and pest monitoring. Use resistant varieties and practice crop rotation.",
+        "img":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRapyYj-quyjDir-yMR3t1WZO3HY0FmbTte2Q&s"
+    }
+]
