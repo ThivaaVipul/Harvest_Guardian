@@ -308,7 +308,7 @@ class _SignUpState extends State<SignUp> {
 
         if (user != null) {
           if (userCredential.additionalUserInfo?.isNewUser ?? false) {
-            addDataOfNewUser(user);
+            await addDataOfNewUser(user);
           }
 
           Navigator.pushReplacement(

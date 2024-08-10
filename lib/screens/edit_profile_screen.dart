@@ -44,7 +44,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           backgroundColor: Colors.transparent,
           leading: IconButton(
             onPressed: () {
-              Navigator.popUntil(context, ModalRoute.withName('/'));
+              Navigator.pop(context);
             },
             icon: Icon(
               Icons.arrow_back,
@@ -211,7 +211,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           msg: 'Profile updated successfully!',
                         );
                         // ignore: use_build_context_synchronously
-                        Navigator.popUntil(context, ModalRoute.withName('/'));
+                        Navigator.pop(context);
                       } catch (error) {
                         Fluttertoast.showToast(
                           msg: 'Failed to update profile: $error',

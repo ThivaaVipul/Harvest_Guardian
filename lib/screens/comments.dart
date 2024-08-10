@@ -157,15 +157,7 @@ class _CommentsState extends State<Comments> {
     try {
       await databaseReference.push().set(commentData);
 
-      var snapshot = await databaseReference.once();
-
-      var data = snapshot.snapshot.value;
-
-      List<BlogComment> updatedComments = _parseComments(data);
-
-      setState(() {
-        widget.blogPost.data.comments = updatedComments;
-      });
+      _handleRefresh();
 
       Fluttertoast.showToast(msg: 'Comment added successfully');
     } catch (e) {
