@@ -243,6 +243,10 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              if (_predictions == null)
+                SizedBox(
+                  height: 200,
+                ),
               const Text(
                 'Experimental Feature\nNot Perfect',
                 textAlign: TextAlign.center,
