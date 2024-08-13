@@ -165,6 +165,14 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
             fontSize: 26,
           ),
         ),
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(
+            Icons.arrow_back,
+            size: 30,
+            color: Constants.primaryColor,
+          ),
+        ),
       ),
       body: FutureBuilder<Position>(
         future: _currentPosition,

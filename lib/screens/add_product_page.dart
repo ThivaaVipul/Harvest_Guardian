@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+
+import 'package:lottie/lottie.dart';
 
 class AddProductPage extends StatefulWidget {
   @override
@@ -75,8 +78,28 @@ class _AddProductPageState extends State<AddProductPage> {
             ),
           ),
           if (_isLoading)
-            Center(
-              child: CircularProgressIndicator(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Center(
+                  child: Lottie.asset(
+                    'assets/loading_animation.json',
+                    width: 250,
+                    height: 250,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Center(
+                  child: Text(
+                    "Adding Product...",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                )
+              ],
             ),
         ],
       ),
@@ -109,8 +132,10 @@ class _AddProductPageState extends State<AddProductPage> {
           _imageUrl = await taskSnapshot.ref.getDownloadURL();
         } else {
           _imageUrl =
-              "https://firebasestorage.googleapis.com/v0/b/harvest-guardian-462ea.appspot.com/o/product_images%2Fproducts.jpg?alt=media&token=53515524-e646-47b0-a04b-c4549223b0be";
+              "https://firebasestorage.googleapis.com/v0/b/harvest-guardian-462ea.appspot.com/o/product_images%2Fproducts.jpg?alt=media&token=166cbd44-073d-4d42-b1f1-f1b864b9fe42";
         }
+
+        String currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
 
         await FirebaseFirestore.instance.collection('products').add({
           'name': _name,
@@ -120,7 +145,11 @@ class _AddProductPageState extends State<AddProductPage> {
           'imageUrl': _imageUrl,
           'userId': FirebaseAuth.instance.currentUser!.uid,
           'sold': false,
+          'timestamp': FieldValue.serverTimestamp(),
+          'email': currentUserEmail,
         });
+
+        Fluttertoast.showToast(msg: 'Product added successfully');
 
         Navigator.pop(context);
       } catch (error) {

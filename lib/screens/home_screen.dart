@@ -6,6 +6,7 @@ import 'package:harvest_guardian/screens/weather_forecast_screen.dart';
 import 'package:harvest_guardian/screens/disease_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:harvest_guardian/widgets/weather_forecast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -38,171 +39,119 @@ class _HomeScreenState extends State<HomeScreen> {
               const WeatherWidget(),
               const SizedBox(height: 20),
 
-              // Enhanced Card Buttons Section
+              // 2x2 Grid of Buttons Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      // Predict Disease Card
-                      Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        elevation: 6,
-                        shadowColor: Colors.black54,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Constants.primaryColor, Colors.green],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(15),
+                child: GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 2,
+                  children: [
+                    _buildGridCard(
+                      context,
+                      title: "Predict Disease",
+                      icon: Icons.qr_code_scanner_rounded,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: const PlantDiseaseDetectionPage(),
+                            type: PageTransitionType.bottomToTop,
                           ),
-                          child: ListTile(
-                            leading:
-                                const Icon(Icons.search, color: Colors.white),
-                            title: const Text(
-                              "Predict Disease",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  child: const PlantDiseaseDetectionPage(),
-                                  type: PageTransitionType.bottomToTop,
-                                ),
-                              );
-                            },
+                        );
+                      },
+                    ),
+                    _buildGridCard(
+                      context,
+                      title: "Weather Dashboard",
+                      icon: Icons.cloudy_snowing,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: const WeatherDashboard(),
+                            type: PageTransitionType.bottomToTop,
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-
-                      // Weather Dashboard Card
-                      Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        elevation: 6,
-                        shadowColor: Colors.black54,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Constants.primaryColor, Colors.green],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(15),
+                        );
+                      },
+                    ),
+                    _buildGridCard(
+                      context,
+                      title: "Disease Details",
+                      icon: Icons.list_alt,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: const DiseaseDetailsPage(),
+                            type: PageTransitionType.bottomToTop,
                           ),
-                          child: ListTile(
-                            leading: const Icon(Icons.dashboard,
-                                color: Colors.white),
-                            title: const Text(
-                              "Weather Dashboard",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  child: const WeatherDashboard(),
-                                  type: PageTransitionType.bottomToTop,
-                                ),
-                              );
-                            },
+                        );
+                      },
+                    ),
+                    _buildGridCard(
+                      context,
+                      title: "Market",
+                      icon: Icons.storefront,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: ProductListingPage(),
+                            type: PageTransitionType.bottomToTop,
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-
-                      // Disease Details Card
-                      Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        elevation: 6,
-                        shadowColor: Colors.black54,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Constants.primaryColor, Colors.green],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: ListTile(
-                            leading:
-                                const Icon(Icons.list_alt, color: Colors.white),
-                            title: const Text(
-                              "Disease Details",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  child: const DiseaseDetailsPage(),
-                                  type: PageTransitionType.bottomToTop,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-
-                      // Disease Details Card
-                      Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        elevation: 6,
-                        shadowColor: Colors.black54,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Constants.primaryColor, Colors.green],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: ListTile(
-                            leading:
-                                const Icon(Icons.list_alt, color: Colors.white),
-                            title: const Text(
-                              "Market",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  child: ProductListingPage(),
-                                  type: PageTransitionType.bottomToTop,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridCard(BuildContext context,
+      {required String title,
+      required IconData icon,
+      required Function onTap}) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      elevation: 6,
+      shadowColor: Colors.black54,
+      child: InkWell(
+        onTap: () => onTap(),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Constants.primaryColor, Colors.green],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FaIcon(icon, color: Colors.white, size: 35),
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

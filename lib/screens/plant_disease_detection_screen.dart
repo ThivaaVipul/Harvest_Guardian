@@ -228,9 +228,7 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
           ),
         ),
         leading: IconButton(
-          onPressed: () {
-            Navigator.popUntil(context, ModalRoute.withName('/'));
-          },
+          onPressed: () => Navigator.of(context).pop(),
           icon: Icon(
             Icons.arrow_back,
             size: 30,
