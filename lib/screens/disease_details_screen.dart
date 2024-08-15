@@ -35,11 +35,14 @@ class _DiseaseDetailsPageState extends State<DiseaseDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
         title: Text(
           'Disease Details',
           style: TextStyle(
               color: Constants.primaryColor,
-              fontSize: 20,
+              fontSize: 25,
               fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
