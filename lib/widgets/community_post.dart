@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:harvest_guardian/screens/comments.dart';
 import 'package:harvest_guardian/utils/blogs.dart';
 import 'package:harvest_guardian/widgets/like_button.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 
 class SinglePost extends StatefulWidget {
@@ -314,9 +316,16 @@ class _SinglePostState extends State<SinglePost> {
                               ),
                             ),
                             body: Center(
-                              child: Image.network(
-                                widget.data.image,
-                                fit: BoxFit.contain,
+                              child: CachedNetworkImage(
+                                imageUrl: widget.data.image,
+                                placeholder: (context, url) => Lottie.asset(
+                                  'assets/loading_animation_txt.json',
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.fill,
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
                               ),
                             ),
                           );
@@ -326,12 +335,21 @@ class _SinglePostState extends State<SinglePost> {
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(5),
-                    child: Image(
+                    child: CachedNetworkImage(
                       width: MediaQuery.of(context).size.width,
-                      height: 250.0,
-                      image: NetworkImage(widget.data.image),
+                      height: 250,
                       fit: BoxFit.cover,
-                      filterQuality: FilterQuality.high,
+                      imageUrl: widget.data.image,
+                      placeholder: (context, url) => Center(
+                        child: Lottie.asset(
+                          'assets/loading_animation_txt.json',
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     ),
                   ),
                 ),

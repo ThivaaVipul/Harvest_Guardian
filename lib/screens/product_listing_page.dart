@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/add_product_page.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -109,11 +111,22 @@ class ProductListingPage extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius:
                               BorderRadius.vertical(top: Radius.circular(15)),
-                          child: Image.network(
-                            imageUrl,
-                            height: 200,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            placeholder: (context, url) => Container(
+                              height: 200,
+                              width: MediaQuery.of(context).size.width,
+                              child: Center(
+                                child: Lottie.asset(
+                                  'assets/loading_animation_txt.json',
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                           ),
                         ),
                       ),

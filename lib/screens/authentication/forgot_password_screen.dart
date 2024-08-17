@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/authentication/signin_screen.dart';
 import 'package:harvest_guardian/widgets/custom_textfield.dart';
@@ -26,12 +27,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       try {
         await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
         // Show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(child: Text('Password reset link sent to $email')),
-            backgroundColor: Colors.green,
-          ),
+        Fluttertoast.showToast(
+          msg: 'Password reset link sent to $email',
+          backgroundColor: Colors.green,
         );
+
         Navigator.pushReplacement(
           context,
           PageTransition(
@@ -47,20 +47,15 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           errorMessage = 'Invalid email format.';
         }
         // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(child: Text(errorMessage)),
-            backgroundColor: Colors.red,
-          ),
+        Fluttertoast.showToast(
+          msg: errorMessage,
+          backgroundColor: Colors.red,
         );
       } catch (error) {
         // Show a generic error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(
-                child: Text('Failed to send password reset email: $error')),
-            backgroundColor: Colors.red,
-          ),
+        Fluttertoast.showToast(
+          msg: 'Failed to send password reset email: $error',
+          backgroundColor: Colors.red,
         );
       }
     }

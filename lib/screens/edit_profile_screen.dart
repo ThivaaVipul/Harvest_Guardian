@@ -99,7 +99,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   image: DecorationImage(
                                     image: NetworkImage(FirebaseAuth
                                             .instance.currentUser!.photoURL ??
-                                        'https://st4.depositphotos.com/1496387/40483/v/450/depositphotos_404831150-stock-illustration-happy-farmer-logo-agriculture-natural.jpg'),
+                                        'https://firebasestorage.googleapis.com/v0/b/harvest-guardian-462ea.appspot.com/o/profile_images%2FProfile.jpg?alt=media&token=f6296ce6-9bce-4bf9-b9c0-c2c234c49f78'),
                                     fit: BoxFit.cover,
                                   ),
                                 ),

@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/authentication/forgot_password_screen.dart';
@@ -264,37 +265,29 @@ class _SignInState extends State<SignIn> {
       });
       if (e.code == 'user-not-found') {
         // Notify user that no user found with this email
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No user found with this email.'),
-            backgroundColor: Colors.red,
-          ),
+        Fluttertoast.showToast(
+          msg: 'No user found with this email.',
+          backgroundColor: Colors.red,
         );
       } else if (e.code == 'wrong-password') {
         // Notify user about incorrect password
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Incorrect password.'),
-            backgroundColor: Colors.red,
-          ),
+        Fluttertoast.showToast(
+          msg: 'Incorrect password.',
+          backgroundColor: Colors.red,
         );
       } else {
         // Notify user about other errors
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('An error occurred. Please try again later.'),
-            backgroundColor: Colors.red,
-          ),
+        Fluttertoast.showToast(
+          msg: 'An error occurred. Please try again later.',
+          backgroundColor: Colors.red,
         );
       }
     } catch (e) {
       print("Error signing in: $e");
       // Notify user about unexpected errors
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An unexpected error occurred.'),
-          backgroundColor: Colors.red,
-        ),
+      Fluttertoast.showToast(
+        msg: 'An unexpected error occurred.',
+        backgroundColor: Colors.red,
       );
     }
   }
@@ -331,34 +324,27 @@ class _SignInState extends State<SignIn> {
             ),
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to sign in with Google.'),
-              backgroundColor: Colors.red,
-            ),
+          Fluttertoast.showToast(
+            msg: 'Failed to sign in with Google.',
+            backgroundColor: Colors.red,
           );
           setState(() {
             _loading = false;
           });
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to sign in with Google.'),
-            backgroundColor: Colors.red,
-          ),
+        Fluttertoast.showToast(
+          msg: 'Failed to sign in with Google.',
+          backgroundColor: Colors.red,
         );
         setState(() {
           _loading = false;
         });
       }
     } catch (e) {
-      print('Error signing in with Google: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An unexpected error occurred.'),
-          backgroundColor: Colors.red,
-        ),
+      Fluttertoast.showToast(
+        msg: 'An unexpected error occurred.',
+        backgroundColor: Colors.red,
       );
       setState(() {
         _loading = false;

@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/authentication/signin_screen.dart';
@@ -255,30 +256,23 @@ class _SignUpState extends State<SignUp> {
         _loading = false;
       });
       if (e.code == 'email-already-in-use') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('The account already exists for that email.'),
-            backgroundColor: Colors.red,
-          ),
+        Fluttertoast.showToast(
+          msg: 'The account already exists for that email.',
+          backgroundColor: Colors.red,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('An error occurred. Please try again later.'),
-            backgroundColor: Colors.red,
-          ),
+        Fluttertoast.showToast(
+          msg: 'An error occurred. Please try again later.',
+          backgroundColor: Colors.red,
         );
       }
     } catch (e) {
       setState(() {
         _loading = false;
       });
-      print("Error signing up: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An unexpected error occurred.'),
-          backgroundColor: Colors.red,
-        ),
+      Fluttertoast.showToast(
+        msg: 'An unexpected error occurred.',
+        backgroundColor: Colors.red,
       );
     }
   }
@@ -319,34 +313,27 @@ class _SignUpState extends State<SignUp> {
             ),
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to sign in with Google.'),
-              backgroundColor: Colors.red,
-            ),
+          Fluttertoast.showToast(
+            msg: 'Failed to sign in with Google.',
+            backgroundColor: Colors.red,
           );
           setState(() {
             _loading = false;
           });
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to sign in with Google.'),
-            backgroundColor: Colors.red,
-          ),
+        Fluttertoast.showToast(
+          msg: 'Failed to sign in with Google.',
+          backgroundColor: Colors.red,
         );
         setState(() {
           _loading = false;
         });
       }
     } catch (e) {
-      print('Error signing in with Google: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An unexpected error occurred.'),
-          backgroundColor: Colors.red,
-        ),
+      Fluttertoast.showToast(
+        msg: 'An unexpected error occurred.',
+        backgroundColor: Colors.red,
       );
       setState(() {
         _loading = false;
@@ -365,7 +352,7 @@ class _SignUpState extends State<SignUp> {
           FirebaseDatabase.instance.ref().child('Users').child(user.uid);
 
       String photoUrl = user.photoURL ??
-          'https://st4.depositphotos.com/1496387/40483/v/450/depositphotos_404831150-stock-illustration-happy-farmer-logo-agriculture-natural.jpg';
+          'https://firebasestorage.googleapis.com/v0/b/harvest-guardian-462ea.appspot.com/o/profile_images%2FProfile.jpg?alt=media&token=f6296ce6-9bce-4bf9-b9c0-c2c234c49f78';
 
       await userRef.set({
         'email': user.email,

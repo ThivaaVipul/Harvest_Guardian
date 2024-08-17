@@ -100,6 +100,7 @@ flutter:
     - assets/plant_disease_labels.txt
     - assets/disease_data.json
     - assets/loading_animation.json
+    - assets/loading_animation_txt.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
