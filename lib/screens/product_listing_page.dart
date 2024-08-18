@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/add_product_page.dart';
+import 'package:harvest_guardian/screens/edit_product.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:photo_view/photo_view.dart';
@@ -66,8 +67,7 @@ class ProductListingPage extends StatelessWidget {
             }
 
             return ListView.builder(
-              padding: EdgeInsets.only(
-                  bottom: 80.0), // Added white space at the bottom
+              padding: EdgeInsets.only(bottom: 80.0),
               itemCount: products.length,
               itemBuilder: (context, index) {
                 var product = products[index];
@@ -75,7 +75,6 @@ class ProductListingPage extends StatelessWidget {
                 String currentuser =
                     FirebaseAuth.instance.currentUser!.email.toString();
 
-                // Check if the fields exist before accessing them
                 String name = product['name'] ?? 'Unknown';
                 String quantity = product['quantity'] ?? 'Unknown';
                 String price = product['price'] ?? 'Unknown';
@@ -113,6 +112,9 @@ class ProductListingPage extends StatelessWidget {
                               BorderRadius.vertical(top: Radius.circular(15)),
                           child: CachedNetworkImage(
                             imageUrl: imageUrl,
+                            width: MediaQuery.of(context).size.width,
+                            height: 200,
+                            fit: BoxFit.cover,
                             placeholder: (context, url) => Container(
                               height: 200,
                               width: MediaQuery.of(context).size.width,
@@ -171,9 +173,7 @@ class ProductListingPage extends StatelessWidget {
                                           style: TextStyle(fontSize: 12)),
                                     ],
                                   ),
-                                  SizedBox(
-                                      width:
-                                          10), // Add some space between buttons
+                                  SizedBox(width: 10),
                                   Column(
                                     children: [
                                       IconButton(
@@ -189,6 +189,28 @@ class ProductListingPage extends StatelessWidget {
                                   ),
                                 ],
                                 if (product['userId'] == currentUserId) ...[
+                                  Column(
+                                    children: [
+                                      IconButton(
+                                        icon: FaIcon(FontAwesomeIcons.edit,
+                                            color: Colors.green),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditProductPage(
+                                                      product: product),
+                                            ),
+                                          );
+                                        },
+                                        tooltip: "Edit Product",
+                                      ),
+                                      Text('Edit',
+                                          style: TextStyle(fontSize: 12)),
+                                    ],
+                                  ),
+                                  SizedBox(width: 10),
                                   Column(
                                     children: [
                                       IconButton(
@@ -209,9 +231,7 @@ class ProductListingPage extends StatelessWidget {
                                           style: TextStyle(fontSize: 12)),
                                     ],
                                   ),
-                                  SizedBox(
-                                      width:
-                                          10), // Add some space between buttons
+                                  SizedBox(width: 10),
                                   Column(
                                     children: [
                                       IconButton(
@@ -272,13 +292,13 @@ class ProductListingPage extends StatelessWidget {
             TextButton(
               child: Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text('Delete'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
                 deleteProduct(productId, imageUrl);
               },
             ),
@@ -337,6 +357,17 @@ class FullScreenImageView extends StatelessWidget {
           backgroundDecoration: BoxDecoration(color: Colors.black),
           minScale: PhotoViewComputedScale.contained,
           maxScale: PhotoViewComputedScale.covered * 2,
+          loadingBuilder: (context, url) => Container(
+            alignment: Alignment.center,
+            child: Center(
+              child: Lottie.asset(
+                'assets/loading_animation_txt.json',
+                width: 100,
+                height: 100,
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
         ),
       ),
     );
