@@ -208,8 +208,21 @@ class UserProfileWidget extends StatelessWidget {
               ),
             );
           },
-          child: const Text(
-            "Logout",
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Constants.primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 5,
+            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          ),
+          child: Text(
+            'Logout',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],

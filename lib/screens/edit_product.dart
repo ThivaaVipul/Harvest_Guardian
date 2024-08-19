@@ -114,6 +114,7 @@ class _EditProductPageState extends State<EditProductPage> {
           'contact': _contact!,
           'location': _location!,
           'imageUrl': imageUrl!,
+          'timestamp': FieldValue.serverTimestamp(),
         });
 
         Fluttertoast.showToast(msg: 'Product updated successfully');
@@ -280,8 +281,24 @@ class _EditProductPageState extends State<EditProductPage> {
                     ),
                     SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: updateProduct,
-                      child: Text('Update Product'),
+                      onPressed: () => updateProduct(),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Constants.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        elevation: 5,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      ),
+                      child: Text(
+                        'Update Product',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
