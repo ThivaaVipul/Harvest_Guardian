@@ -351,8 +351,7 @@ class _SignUpState extends State<SignUp> {
       DatabaseReference userRef =
           FirebaseDatabase.instance.ref().child('Users').child(user.uid);
 
-      String photoUrl = user.photoURL ??
-          'https://firebasestorage.googleapis.com/v0/b/harvest-guardian-462ea.appspot.com/o/profile_images%2FProfile.jpg?alt=media&token=f6296ce6-9bce-4bf9-b9c0-c2c234c49f78';
+      String photoUrl = user.photoURL ?? Constants.defaultProfileImgUrl;
 
       await userRef.set({
         'email': user.email,

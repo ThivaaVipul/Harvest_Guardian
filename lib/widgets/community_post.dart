@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -201,14 +202,27 @@ class _SinglePostState extends State<SinglePost> {
     });
   }
 
+  Future<void> deleteImageFromFirebaseStorage(String imageUrl) async {
+    try {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference imageRef = storage.refFromURL(imageUrl);
+      await imageRef.delete();
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Failed to delete image from storage: $e");
+    }
+  }
+
   void deletePostAndNavigateBack() {
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+
     databaseReference
         .child('Blogs')
         .child(widget.data.postId)
         .remove()
-        .then((_) {
-      Fluttertoast.showToast(msg: "Post is successfully deleted");
+        .then((_) async {
+      await deleteImageFromFirebaseStorage(widget.data.image);
+
+      Fluttertoast.showToast(msg: "Post successfully deleted");
       Navigator.popUntil(context, ModalRoute.withName('/'));
     }).catchError((error) {
       Fluttertoast.showToast(msg: "Failed to delete post: $error");

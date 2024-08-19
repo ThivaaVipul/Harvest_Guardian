@@ -153,6 +153,9 @@ class _EditProductPageState extends State<EditProductPage> {
                               alignment: Alignment.center,
                               children: [
                                 Image.file(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 200,
+                                  fit: BoxFit.cover,
                                   _imageFile!,
                                   color: Colors.black.withOpacity(0.5),
                                   colorBlendMode: BlendMode.color,
@@ -188,9 +191,23 @@ class _EditProductPageState extends State<EditProductPage> {
                                   alignment: Alignment.center,
                                   children: [
                                     Image.network(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 200,
+                                      fit: BoxFit.cover,
                                       _imageUrl!,
                                       color: Colors.black.withOpacity(0.5),
                                       colorBlendMode: BlendMode.color,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return Center(
+                                            child: Lottie.asset(
+                                                width: 100,
+                                                height: 100,
+                                                'assets/loading_animation_txt.json'));
+                                        // Replace with your Lottie file path
+                                      },
                                     ),
                                     Container(
                                       child: Column(
@@ -229,6 +246,9 @@ class _EditProductPageState extends State<EditProductPage> {
                                   ),
                                   child: _imageFile != null
                                       ? Image.file(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          height: 200,
                                           _imageFile!,
                                           fit: BoxFit.cover,
                                         )

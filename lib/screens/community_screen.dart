@@ -233,27 +233,95 @@ class _CommunityPageState extends State<CommunityPage> {
                   );
                 },
               )
-            : _buildShimmerLoading(), // Render shimmer loading if blogsData is empty
+            : blogsData.isEmpty
+                ? _buildNoPostsMessage()
+                : _buildShimmerLoading(), // Render shimmer loading if blogsData is empty
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Constants.primaryColor,
-        icon: const Icon(
-          Icons.edit,
-          color: Colors.white,
-        ),
-        label: const Text(
-          'Ask Community',
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            PageTransition(
-              child: const AddBlogPost(),
-              type: PageTransitionType.topToBottom,
+      floatingActionButton: blogsData.isNotEmpty
+          ? FloatingActionButton.extended(
+              backgroundColor: Constants.primaryColor,
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.white,
+              ),
+              label: const Text(
+                'Ask Community',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: const AddBlogPost(),
+                    type: PageTransitionType.topToBottom,
+                  ),
+                );
+              },
+            )
+          : null,
+    );
+  }
+
+  Widget _buildNoPostsMessage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.forum_rounded,
+            color: Constants.primaryColor,
+            size: 120,
+          ),
+          SizedBox(height: 20),
+          Text(
+            'No Posts Yet',
+            style: TextStyle(
+              color: Constants.primaryColor,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
             ),
-          );
-        },
+          ),
+          SizedBox(height: 15),
+          Text(
+            'Join the conversation and be the first to post!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xff58a67b),
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 40),
+          ElevatedButton.icon(
+            icon: Icon(Icons.add_circle_outline, color: Colors.white),
+            label: Text(
+              'Create Your First Post',
+              style: TextStyle(color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Constants.primaryColor,
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              elevation: 8,
+              textStyle: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                PageTransition(
+                  child: const AddBlogPost(),
+                  type: PageTransitionType.fade,
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

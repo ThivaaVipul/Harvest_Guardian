@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
@@ -137,10 +138,8 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
           );
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Thanks for the feedback!"),
-          ),
+        Fluttertoast.showToast(
+          msg: 'Thanks for the feedback!',
         );
       }
     }
@@ -158,11 +157,8 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
     final File file = File(_imageFile!.path);
 
     await ref.putFile(file);
-    // ignore: use_build_context_synchronously
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Image uploaded! Thanks For Your Feedback."),
-      ),
+    Fluttertoast.showToast(
+      msg: 'Image uploaded! Thanks For Your Feedback.',
     );
   }
 
@@ -185,10 +181,8 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
                 if (customLabel.isNotEmpty) {
                   _uploadImageToFirebase(customLabel);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Please enter a label."),
-                    ),
+                  Fluttertoast.showToast(
+                    msg: 'Please enter a label.',
                   );
                 }
               },
@@ -245,13 +239,20 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
                 SizedBox(
                   height: 200,
                 ),
-              const Text(
-                'Experimental Feature\nNot Perfect',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF5F5F5), // Light grey background
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Experimental Feature\nNot Perfect',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black87, // Darker text for better contrast
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -265,12 +266,42 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () => _pickImage(ImageSource.gallery),
-                child: const Text('Select Image'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Constants.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 5,
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                ),
+                child: Text(
+                  'Select Image',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => _pickImage(ImageSource.camera),
-                child: const Text('Take Picture'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Constants.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 5,
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                ),
+                child: Text(
+                  'Take Picture',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
               const SizedBox(height: 30),
               if (_predictions != null)
@@ -354,7 +385,24 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
                               },
                             );
                           },
-                          child: const Text('Correct'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor:
+                                Constants.primaryColor.withOpacity(0.9),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 5,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 16),
+                          ),
+                          child: Text(
+                            'Correct',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                         ElevatedButton(
                           onPressed: () {
@@ -382,7 +430,24 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
                               },
                             );
                           },
-                          child: const Text('Incorrect'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor:
+                                Constants.primaryColor.withOpacity(0.9),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 5,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 16),
+                          ),
+                          child: Text(
+                            'Incorrect',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),

@@ -86,8 +86,7 @@ class _AddBlogPostState extends State<AddBlogPost> {
       setState(() {
         _isLoading = false;
       });
-
-      Navigator.popUntil(context, ModalRoute.withName('/'));
+      Navigator.pop(context);
     } catch (error) {
       Fluttertoast.showToast(msg: "Error uploading post: $error");
       setState(() {

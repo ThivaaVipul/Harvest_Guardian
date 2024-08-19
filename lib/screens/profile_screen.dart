@@ -127,8 +127,8 @@ class UserProfileWidget extends StatelessWidget {
                       },
                       child: Center(
                         child: CachedNetworkImage(
-                          imageUrl: user.photoURL ??
-                              'https://firebasestorage.googleapis.com/v0/b/harvest-guardian-462ea.appspot.com/o/profile_images%2FProfile.jpg?alt=media&token=f6296ce6-9bce-4bf9-b9c0-c2c234c49f78',
+                          imageUrl:
+                              user.photoURL ?? Constants.defaultProfileImgUrl,
                           placeholder: (context, url) => Shimmer.fromColors(
                             baseColor: Colors.grey[300]!,
                             highlightColor: Colors.grey[100]!,
@@ -152,8 +152,7 @@ class UserProfileWidget extends StatelessWidget {
             );
           },
           child: CachedNetworkImage(
-            imageUrl: user!.photoURL ??
-                'https://firebasestorage.googleapis.com/v0/b/harvest-guardian-462ea.appspot.com/o/profile_images%2FProfile.jpg?alt=media&token=f6296ce6-9bce-4bf9-b9c0-c2c234c49f78',
+            imageUrl: user!.photoURL ?? Constants.defaultProfileImgUrl,
             imageBuilder: (context, imageProvider) => Container(
               width: 200,
               height: 200,

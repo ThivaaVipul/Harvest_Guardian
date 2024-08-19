@@ -255,8 +255,7 @@ class _AddProductPageState extends State<AddProductPage> {
           final taskSnapshot = await uploadTask.whenComplete(() => null);
           _imageUrl = await taskSnapshot.ref.getDownloadURL();
         } else {
-          _imageUrl =
-              "https://firebasestorage.googleapis.com/v0/b/harvest-guardian-462ea.appspot.com/o/product_images%2Fproducts.jpg?alt=media&token=166cbd44-073d-4d42-b1f1-f1b864b9fe42";
+          _imageUrl = Constants.defaultProductImgUrl;
         }
 
         String currentUserEmail = FirebaseAuth.instance.currentUser!.email!;

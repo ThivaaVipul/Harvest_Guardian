@@ -99,7 +99,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   image: DecorationImage(
                                     image: NetworkImage(FirebaseAuth
                                             .instance.currentUser!.photoURL ??
-                                        'https://firebasestorage.googleapis.com/v0/b/harvest-guardian-462ea.appspot.com/o/profile_images%2FProfile.jpg?alt=media&token=f6296ce6-9bce-4bf9-b9c0-c2c234c49f78'),
+                                        Constants.defaultProfileImgUrl),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -223,7 +223,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         });
                       }
                     },
-                    child: const Text('Save'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Constants.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 5,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    ),
+                    child: Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(
