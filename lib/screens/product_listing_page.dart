@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -24,15 +26,26 @@ class _ProductListingPageState extends State<ProductListingPage> {
   String searchQuery = "";
   TextEditingController searchController = TextEditingController();
   FocusNode searchFocusNode = FocusNode();
+  Timer? _debounce;
 
   Future<void> _refreshProducts() async {
     await Future.delayed(Duration(seconds: 2));
     Fluttertoast.showToast(msg: "Products refreshed successfully");
   }
 
+  void _onSearchChanged(String value) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        searchQuery = value.toLowerCase();
+      });
+    });
+  }
+
   @override
   void dispose() {
     searchFocusNode.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -70,7 +83,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                   return Center(child: CircularProgressIndicator());
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return _buildNoProductsWidget();
+                  return _buildNoProductsWidget(searchQuery);
                 }
 
                 var products = snapshot.data!.docs.where((doc) {
@@ -82,10 +95,6 @@ class _ProductListingPageState extends State<ProductListingPage> {
                       (name.contains(searchQuery) ||
                           location.contains(searchQuery));
                 }).toList();
-
-                if (products.isEmpty) {
-                  return _buildNoProductsWidget();
-                }
 
                 return Column(
                   children: [
@@ -108,11 +117,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         child: TextField(
                           focusNode: searchFocusNode,
                           controller: searchController,
-                          onChanged: (value) {
-                            setState(() {
-                              searchQuery = value.toLowerCase();
-                            });
-                          },
+                          onChanged: _onSearchChanged,
                           decoration: InputDecoration(
                             contentPadding:
                                 EdgeInsets.symmetric(vertical: 15.0),
@@ -125,6 +130,11 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         ),
                       ),
                     ),
+                    if (products.isEmpty)
+                      SizedBox(
+                        height: 150,
+                      ),
+                    if (products.isEmpty) _buildNoProductsWidget(searchQuery),
                     Expanded(
                       child: ListView.builder(
                         padding: EdgeInsets.only(bottom: 80.0),
@@ -139,6 +149,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                           String name = product['name'] ?? 'Unknown';
                           String quantity = product['quantity'] ?? 'Unknown';
                           String price = product['price'] ?? 'Unknown';
+                          String location = product['location'] ?? 'Unknown';
                           String contact_in_db =
                               product['contact'] ?? 'Unknown';
                           String contact = contact_in_db.startsWith('0')
@@ -211,6 +222,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                       Text('Quantity: $quantity',
                                           style: TextStyle(fontSize: 16)),
                                       Text('Price: Rs. $price',
+                                          style: TextStyle(fontSize: 16)),
+                                      Text('Location: $location',
                                           style: TextStyle(fontSize: 16)),
                                       if (currentuser != mail)
                                         Text('Contact: $contact',
@@ -448,7 +461,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
   }
 }
 
-Widget _buildNoProductsWidget() {
+Widget _buildNoProductsWidget(String searchQuery) {
   return Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -457,7 +470,9 @@ Widget _buildNoProductsWidget() {
             size: 100, color: Constants.primaryColor),
         SizedBox(height: 20),
         Text(
-          'No products available',
+          searchQuery.isEmpty
+              ? 'No products available'
+              : 'No products found for "$searchQuery"',
           style: TextStyle(fontSize: 20, color: Constants.primaryColor),
         ),
       ],
