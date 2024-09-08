@@ -319,8 +319,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                       toggleSoldStatus(
                                                           product.id, !isSold),
                                                   tooltip: isSold
-                                                      ? "Mark as Sold"
-                                                      : "Mark as UnSold",
+                                                      ? "Mark as UnSold"
+                                                      : "Mark as Sold",
                                                 ),
                                                 Text(isSold ? 'UnSold' : 'Sold',
                                                     style: TextStyle(
