@@ -105,7 +105,7 @@ class _AddBlogPostState extends State<AddBlogPost> {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.popUntil(context, ModalRoute.withName('/'));
+            Navigator.of(context).pop();
           },
           icon: Icon(
             Icons.arrow_back,

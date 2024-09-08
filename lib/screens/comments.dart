@@ -231,9 +231,11 @@ class _CommentsState extends State<Comments> {
       var data = snapshot.snapshot.value;
       List<BlogComment> updatedComments = _parseComments(data);
 
-      setState(() {
-        widget.blogPost.data.comments = updatedComments;
-      });
+      if (mounted) {
+        setState(() {
+          widget.blogPost.data.comments = updatedComments;
+        });
+      }
 
       Fluttertoast.showToast(msg: "Comments refreshed successfully");
     } catch (error) {
@@ -254,9 +256,11 @@ class _CommentsState extends State<Comments> {
       var data = event.snapshot.value;
       List<BlogComment> updatedComments = _parseComments(data);
 
-      setState(() {
-        widget.blogPost.data.comments = updatedComments;
-      });
+      if (mounted) {
+        setState(() {
+          widget.blogPost.data.comments = updatedComments;
+        });
+      }
     }, onError: (error) {
       Fluttertoast.showToast(msg: "Error fetching comments: $error");
     });
@@ -325,9 +329,11 @@ class _CommentsState extends State<Comments> {
 
         List<BlogComment> updatedComments = _parseComments(data);
 
-        setState(() {
-          widget.blogPost.data.comments = updatedComments;
-        });
+        if (mounted) {
+          setState(() {
+            widget.blogPost.data.comments = updatedComments;
+          });
+        }
 
         Fluttertoast.showToast(msg: 'Voted successfully');
       }
@@ -360,7 +366,7 @@ class _CommentsState extends State<Comments> {
         ),
         leading: IconButton(
           onPressed: () {
-            Navigator.popUntil(context, ModalRoute.withName('/'));
+            Navigator.of(context).pop();
           },
           icon: Icon(
             Icons.arrow_back,

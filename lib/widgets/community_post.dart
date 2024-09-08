@@ -223,6 +223,7 @@ class _SinglePostState extends State<SinglePost> {
       await deleteImageFromFirebaseStorage(widget.data.image);
 
       Fluttertoast.showToast(msg: "Post successfully deleted");
+      // if (!mounted) return;
       Navigator.popUntil(context, ModalRoute.withName('/'));
     }).catchError((error) {
       Fluttertoast.showToast(msg: "Failed to delete post: $error");

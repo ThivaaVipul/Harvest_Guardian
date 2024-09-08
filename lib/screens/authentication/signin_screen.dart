@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -316,6 +317,10 @@ class _SignInState extends State<SignIn> {
         final User? user = userCredential.user;
 
         if (user != null) {
+          if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+            await addDataOfNewUser(user);
+          }
+
           Navigator.pushReplacement(
             context,
             PageTransition(
@@ -349,6 +354,32 @@ class _SignInState extends State<SignIn> {
       setState(() {
         _loading = false;
       });
+    }
+  }
+
+  Future<void> addDataOfNewUser(User user) async {
+    try {
+      print('User: $user');
+      print('Email: ${user.email}');
+      print('DisplayName: ${user.displayName}');
+      print('PhotoUrl: ${user.photoURL}');
+
+      DatabaseReference userRef =
+          FirebaseDatabase.instance.ref().child('Users').child(user.uid);
+
+      String photoUrl = user.photoURL ?? Constants.defaultProfileImgUrl;
+
+      await userRef.set({
+        'email': user.email,
+        'displayName': user.displayName,
+        'photoUrl': photoUrl,
+      });
+      Fluttertoast.showToast(
+        msg: 'Account created successfully. \nWelcome!',
+      );
+    } catch (e) {
+      print('Error adding user data: $e');
+      rethrow;
     }
   }
 }

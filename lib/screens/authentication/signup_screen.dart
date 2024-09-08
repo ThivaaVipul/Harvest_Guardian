@@ -358,6 +358,9 @@ class _SignUpState extends State<SignUp> {
         'displayName': user.displayName,
         'photoUrl': photoUrl,
       });
+      Fluttertoast.showToast(
+        msg: 'Account created successfully. \nWelcome!',
+      );
     } catch (e) {
       print('Error adding user data: $e');
       rethrow;

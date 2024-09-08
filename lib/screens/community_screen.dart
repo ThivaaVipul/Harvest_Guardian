@@ -22,6 +22,7 @@ class _CommunityPageState extends State<CommunityPage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   List<Blogs> blogsData = [];
+  bool loading = true;
 
   @override
   void initState() {
@@ -53,8 +54,12 @@ class _CommunityPageState extends State<CommunityPage> {
 
   Future<List<Blogs>> _getData() async {
     DatabaseReference reference = FirebaseDatabase.instance.ref();
+    setState(() {
+      loading = true;
+    });
     try {
       var snapshot = await reference.child("Blogs").once();
+
       var data = snapshot.snapshot.value;
       if (data != null && data is Map<dynamic, dynamic>) {
         List<Blogs> newData = [];
@@ -77,12 +82,21 @@ class _CommunityPageState extends State<CommunityPage> {
         });
         newData.sort(
             (a, b) => b.timestamp.compareTo(a.timestamp)); // Sort by timestamp
+        setState(() {
+          loading = false;
+        });
         return newData;
       } else {
+        setState(() {
+          loading = false;
+        });
         Fluttertoast.showToast(msg: "No Posts Uploaded Yet");
         return [];
       }
     } catch (error) {
+      setState(() {
+        loading = false;
+      });
       Fluttertoast.showToast(msg: "Error fetching data: $error");
       rethrow;
     }
@@ -206,36 +220,36 @@ class _CommunityPageState extends State<CommunityPage> {
       body: RefreshIndicator(
         key: _refreshIndicatorKey,
         onRefresh: _handleRefresh,
-        child: blogsData.isNotEmpty
-            ? ListView.builder(
-                itemCount: blogsData.length,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          child: Comments(
-                            blogPost: SinglePost(
-                              data: blogsData[index],
-                              isCommentScreen: true,
+        child: loading
+            ? _buildShimmerLoading()
+            : blogsData.isEmpty
+                ? _buildNoPostsMessage()
+                : ListView.builder(
+                    itemCount: blogsData.length,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: Comments(
+                                blogPost: SinglePost(
+                                  data: blogsData[index],
+                                  isCommentScreen: true,
+                                ),
+                              ),
+                              type: PageTransitionType.topToBottom,
                             ),
-                          ),
-                          type: PageTransitionType.topToBottom,
+                          );
+                        },
+                        child: SinglePost(
+                          data: blogsData[index],
+                          isCommentScreen: false,
                         ),
                       );
                     },
-                    child: SinglePost(
-                      data: blogsData[index],
-                      isCommentScreen: false,
-                    ),
-                  );
-                },
-              )
-            : blogsData.isEmpty
-                ? _buildNoPostsMessage()
-                : _buildShimmerLoading(), // Render shimmer loading if blogsData is empty
+                  ),
       ),
       floatingActionButton: blogsData.isNotEmpty
           ? FloatingActionButton.extended(
@@ -326,78 +340,47 @@ class _CommunityPageState extends State<CommunityPage> {
     );
   }
 
-  Widget _buildShimmerLoading() {
-    return SingleChildScrollView(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: Colors.grey[300]!, width: 1),
+  Widget _buildShimmerSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildShimmerImage(),
+        const SizedBox(height: 15),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildShimmerText(width: 150.0, height: 20.0),
+              const SizedBox(height: 5),
+              _buildShimmerText(width: 300.0, height: 18.0),
+              const SizedBox(height: 5),
+              _buildShimmerText(width: 200.0, height: 14.0),
+              const SizedBox(height: 5),
+              _buildShimmerText(width: 150.0, height: 14.0),
+            ],
+          ),
         ),
-        margin: const EdgeInsets.all(15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildShimmerImage(),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildShimmerText(width: 150.0, height: 20.0),
-                  const SizedBox(height: 5),
-                  _buildShimmerText(width: 300.0, height: 18.0),
-                  const SizedBox(height: 5),
-                  _buildShimmerText(width: 200.0, height: 14.0),
-                  const SizedBox(height: 5),
-                  _buildShimmerText(width: 150.0, height: 14.0),
-                ],
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(width: 10),
-                _buildShimmerLikeCommentShare(),
-                const SizedBox(width: 20),
-                _buildShimmerLikeCommentShare(),
-                const SizedBox(width: 20),
-                _buildShimmerLikeCommentShare(),
-              ],
-            ),
-            const SizedBox(height: 10),
-            _buildShimmerImage(),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildShimmerText(width: 150.0, height: 20.0),
-                  const SizedBox(height: 5),
-                  _buildShimmerText(width: 300.0, height: 18.0),
-                  const SizedBox(height: 5),
-                  _buildShimmerText(width: 200.0, height: 14.0),
-                  const SizedBox(height: 5),
-                  _buildShimmerText(width: 150.0, height: 14.0),
-                ],
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(width: 10),
-                _buildShimmerLikeCommentShare(),
-                const SizedBox(width: 20),
-                _buildShimmerLikeCommentShare(),
-                const SizedBox(width: 20),
-                _buildShimmerLikeCommentShare(),
-              ],
-            ),
-            const SizedBox(height: 10),
+            const SizedBox(width: 10),
+            _buildShimmerLikeCommentShare(),
+            const SizedBox(width: 20),
+            _buildShimmerLikeCommentShare(),
+            const SizedBox(width: 20),
+            _buildShimmerLikeCommentShare(),
           ],
         ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return SingleChildScrollView(
+      child: Column(
+        children: List.generate(2, (_) => _buildShimmerSection()),
       ),
     );
   }
