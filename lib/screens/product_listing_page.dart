@@ -281,7 +281,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               children: [
                                                 IconButton(
                                                   icon: FaIcon(
-                                                      FontAwesomeIcons.edit,
+                                                      FontAwesomeIcons
+                                                          .penToSquare,
                                                       color: Colors.green),
                                                   onPressed: () {
                                                     Navigator.push(
@@ -308,9 +309,9 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                                   icon: FaIcon(
                                                       isSold
                                                           ? FontAwesomeIcons
-                                                              .timesCircle
+                                                              .circleXmark
                                                           : FontAwesomeIcons
-                                                              .checkCircle,
+                                                              .circleCheck,
                                                       color: isSold
                                                           ? Colors.red
                                                           : Colors.green),
@@ -331,7 +332,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                               children: [
                                                 IconButton(
                                                   icon: FaIcon(
-                                                      FontAwesomeIcons.trashAlt,
+                                                      FontAwesomeIcons.trashCan,
                                                       color: Colors.red),
                                                   onPressed: () =>
                                                       deleteProductWithConfirmation(
