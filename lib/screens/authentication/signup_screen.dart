@@ -303,6 +303,9 @@ class _SignUpState extends State<SignUp> {
         if (user != null) {
           if (userCredential.additionalUserInfo?.isNewUser ?? false) {
             await addDataOfNewUser(user);
+            Fluttertoast.showToast(
+              msg: 'Account created successfully. \nWelcome!',
+            );
           }
 
           Navigator.pushReplacement(
