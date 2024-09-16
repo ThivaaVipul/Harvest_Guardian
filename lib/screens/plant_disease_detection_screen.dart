@@ -46,7 +46,7 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
         .loadString('assets/plant_disease_labels.txt');
     setState(() {
       _labels = labels.split('\n').where((label) => label.isNotEmpty).toList();
-      _labels.add("Other");
+      // _labels.add("Other");
     });
   }
 

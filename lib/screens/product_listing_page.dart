@@ -35,7 +35,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   void _onSearchChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
+    _debounce = Timer(const Duration(milliseconds: 1000), () {
       setState(() {
         searchQuery = value.toLowerCase();
       });
@@ -160,43 +160,50 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         String mail = product['email'] ?? "Unknown";
 
                         return Card(
-                          elevation: 8,
+                          elevation: 10,
                           margin: EdgeInsets.all(10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
+                          color: Colors.white,
                           child: Column(
                             children: [
                               GestureDetector(
                                 onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        FullScreenImageView(imageUrl: imageUrl),
+                                    builder: (context) => FullScreenImageView(
+                                      imageUrl: imageUrl,
+                                      name: name,
+                                    ),
                                   ),
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(15)),
-                                  child: CachedNetworkImage(
-                                    imageUrl: imageUrl,
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 200,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Container(
-                                      height: 200,
+                                  child: Hero(
+                                    tag: 'image_${product.id}',
+                                    child: CachedNetworkImage(
+                                      imageUrl: imageUrl,
                                       width: MediaQuery.of(context).size.width,
-                                      child: Center(
-                                        child: Lottie.asset(
-                                          'assets/loading_animation_txt.json',
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.fill,
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => Container(
+                                        height: 200,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        child: Center(
+                                          child: Lottie.asset(
+                                            'assets/loading_animation_txt.json',
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.fill,
+                                          ),
                                         ),
                                       ),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
                                     ),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
                                   ),
                                 ),
                               ),
@@ -205,28 +212,92 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(name,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold)),
-                                    SizedBox(height: 5),
-                                    Text('Quantity: $quantity',
-                                        style: TextStyle(fontSize: 16)),
-                                    Text('Price: Rs. $price',
-                                        style: TextStyle(fontSize: 16)),
-                                    Text('Location: $location',
-                                        style: TextStyle(fontSize: 16)),
-                                    if (currentuser != mail)
-                                      Text('Contact: $contact',
-                                          style: TextStyle(fontSize: 16)),
-                                    Text('Posted on: $formattedDateTime',
-                                        style: TextStyle(fontSize: 16)),
-                                    currentuser != mail
-                                        ? Text('By: $mail',
-                                            style: TextStyle(fontSize: 16))
-                                        : Text('By: You',
-                                            style: TextStyle(fontSize: 16)),
-                                    SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            name,
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ),
+                                        if (DateTime.now()
+                                                .difference(postDateTime)
+                                                .inDays <
+                                            7)
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.deepOrange,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              'NEW',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 8),
+                                    Divider(
+                                        thickness: 1, color: Colors.grey[300]),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        IconTextRow(
+                                          icon: Icons.storage,
+                                          text: 'Quantity: $quantity',
+                                          textStyle: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black87),
+                                        ),
+                                        IconTextRow(
+                                          icon: Icons.attach_money,
+                                          text: 'Price: Rs. $price',
+                                          textStyle: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                              color: Colors.black87),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 4),
+                                    IconTextRow(
+                                      icon: Icons.place,
+                                      text: 'Location: $location',
+                                      textStyle: TextStyle(
+                                          fontSize: 16, color: Colors.black87),
+                                    ),
+                                    IconTextRow(
+                                      icon: Icons.phone,
+                                      text: 'Contact: $contact',
+                                      textStyle: TextStyle(
+                                          fontSize: 16, color: Colors.black87),
+                                    ),
+                                    SizedBox(height: 4),
+                                    IconTextRow(
+                                      icon: Icons.calendar_today,
+                                      text: 'Posted on: $formattedDateTime',
+                                      textStyle: TextStyle(
+                                          fontSize: 16, color: Colors.grey),
+                                    ),
+                                    SizedBox(height: 4),
+                                    IconTextRow(
+                                      icon: Icons.person,
+                                      text: currentuser != mail
+                                          ? 'By: $mail'
+                                          : 'By: You',
+                                      textStyle: TextStyle(
+                                          fontSize: 16, color: Colors.black54),
+                                    ),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
@@ -470,24 +541,33 @@ Widget _buildNoProductsWidget(String searchQuery) {
 
 class FullScreenImageView extends StatelessWidget {
   final String imageUrl;
+  final String name;
 
-  FullScreenImageView({required this.imageUrl});
+  FullScreenImageView({required this.imageUrl, required this.name});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Constants.primaryColor),
           onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          name,
+          style: TextStyle(
+            color: Constants.primaryColor,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: GestureDetector(
         onTap: () => Navigator.pop(context),
         child: PhotoView(
           imageProvider: NetworkImage(imageUrl),
-          backgroundDecoration: BoxDecoration(color: Colors.black),
+          backgroundDecoration: BoxDecoration(color: Colors.white),
           minScale: PhotoViewComputedScale.contained,
           maxScale: PhotoViewComputedScale.covered * 2,
           loadingBuilder: (context, url) => Container(
@@ -503,6 +583,29 @@ class FullScreenImageView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class IconTextRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final TextStyle textStyle;
+
+  IconTextRow({
+    required this.icon,
+    required this.text,
+    required this.textStyle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: textStyle.color),
+        SizedBox(width: 8),
+        Text(text, style: textStyle),
+      ],
     );
   }
 }

@@ -36,3 +36,4 @@ Tomato target spot
 Tomato yellow leaf curl virus
 Tomato mosaic virus
 Tomato healthy
+Other
