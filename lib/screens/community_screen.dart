@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:harvest_guardian/constants.dart';
@@ -22,12 +24,14 @@ class _CommunityPageState extends State<CommunityPage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   List<Blogs> blogsData = [];
+  Map<String, String> userProfilePics = {};
   bool loading = true;
 
   @override
   void initState() {
     super.initState();
     _getData();
+    _fetchUserProfilePics();
     _setupBlogsListener();
   }
 
@@ -36,6 +40,29 @@ class _CommunityPageState extends State<CommunityPage> {
     DatabaseReference blogsRef = FirebaseDatabase.instance.ref().child('Blogs');
     blogsRef.onValue.listen((event) {}).cancel();
     super.dispose();
+  }
+
+  Future<void> _fetchUserProfilePics() async {
+    DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('Users');
+    try {
+      var snapshot = await usersRef.once();
+
+      var data = snapshot.snapshot.value;
+      if (data != null && data is Map<dynamic, dynamic>) {
+        setState(() {
+          userProfilePics.clear();
+          data.forEach((uid, userData) {
+            userProfilePics[userData['email']] =
+                userData['photoUrl'] ?? Constants.defaultProfileImgUrl;
+          });
+        });
+      } else {
+        Fluttertoast.showToast(msg: "Error fetching user profile pictures");
+      }
+    } catch (error) {
+      Fluttertoast.showToast(
+          msg: "Error fetching user profile pictures: $error");
+    }
   }
 
   Future<void> _handleRefresh() async {
@@ -200,6 +227,34 @@ class _CommunityPageState extends State<CommunityPage> {
     });
   }
 
+  Future<void> deleteImageFromFirebaseStorage(String imageUrl) async {
+    try {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference imageRef = storage.refFromURL(imageUrl);
+      await imageRef.delete();
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Failed to delete image from storage: $e");
+    }
+  }
+
+  void deletePost(Blogs data) {
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+
+    databaseReference
+        .child('Blogs')
+        .child(data.postId)
+        .remove()
+        .then((_) async {
+      await deleteImageFromFirebaseStorage(data.image);
+
+      blogsData.removeWhere((blog) => blog.postId == data.postId);
+
+      Fluttertoast.showToast(msg: "Post successfully deleted");
+    }).catchError((error) {
+      Fluttertoast.showToast(msg: "Failed to delete post: $error");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -237,15 +292,75 @@ class _CommunityPageState extends State<CommunityPage> {
                                 blogPost: SinglePost(
                                   data: blogsData[index],
                                   isCommentScreen: true,
+                                  userProfilePics: userProfilePics,
                                 ),
                               ),
                               type: PageTransitionType.topToBottom,
                             ),
                           );
                         },
-                        child: SinglePost(
-                          data: blogsData[index],
-                          isCommentScreen: false,
+                        child: Column(
+                          children: [
+                            if (FirebaseAuth.instance.currentUser?.email ==
+                                blogsData[index].userEmail)
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text("Confirm Delete"),
+                                        content: const Text(
+                                            "Are you sure you want to delete this post?"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text("No"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              deletePost(blogsData[index]);
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("Yes"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        "Delete",
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      SizedBox(width: 5),
+                                      Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            SinglePost(
+                              data: blogsData[index],
+                              isCommentScreen: false,
+                              userProfilePics: userProfilePics,
+                            ),
+                          ],
                         ),
                       );
                     },
@@ -269,7 +384,9 @@ class _CommunityPageState extends State<CommunityPage> {
                     child: const AddBlogPost(),
                     type: PageTransitionType.topToBottom,
                   ),
-                );
+                ).then((_) {
+                  _handleRefresh();
+                });
               },
             )
           : null,
@@ -332,7 +449,9 @@ class _CommunityPageState extends State<CommunityPage> {
                   child: const AddBlogPost(),
                   type: PageTransitionType.fade,
                 ),
-              );
+              ).then((_) {
+                _handleRefresh();
+              });
             },
           ),
         ],

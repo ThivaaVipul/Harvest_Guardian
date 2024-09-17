@@ -389,6 +389,7 @@ class _CommentsState extends State<Comments> {
                   SinglePost(
                     data: widget.blogPost.data,
                     isCommentScreen: true,
+                    userProfilePics: widget.blogPost.userProfilePics,
                   ),
                   ListView.builder(
                     itemCount: widget.blogPost.data.comments.length,
@@ -407,7 +408,7 @@ class _CommentsState extends State<Comments> {
                           final userData = snapshot.data!;
                           return CommentItem(
                             profilePicUrl: userData['photoUrl'] ??
-                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3LtPpyEGxYGWK-cFpXK3bvjQajWfoXXwnhTXY5X-xrQ&s',
+                                Constants.defaultProfileImgUrl,
                             userEmail:
                                 userData['displayName'] ?? comment.userEmail,
                             commentText: comment.commentText,

@@ -1,9 +1,8 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use, must_be_immutable
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,8 +16,12 @@ import 'package:page_transition/page_transition.dart';
 class SinglePost extends StatefulWidget {
   final Blogs data;
   final bool isCommentScreen;
-  const SinglePost(
-      {super.key, required this.data, required this.isCommentScreen});
+  Map<String, String> userProfilePics = {};
+  SinglePost(
+      {super.key,
+      required this.data,
+      required this.isCommentScreen,
+      required this.userProfilePics});
 
   @override
   State<SinglePost> createState() => _SinglePostState();
@@ -57,7 +60,7 @@ class _SinglePostState extends State<SinglePost> {
   String formatTimestamp(int timestamp) {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
 
-    String formattedDate = DateFormat('yyyy/MM/dd - HH:mm').format(dateTime);
+    String formattedDate = DateFormat('dd/MM/yyyy h:mm a').format(dateTime);
 
     return formattedDate;
   }
@@ -201,99 +204,16 @@ class _SinglePostState extends State<SinglePost> {
     });
   }
 
-  Future<void> deleteImageFromFirebaseStorage(String imageUrl) async {
-    try {
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference imageRef = storage.refFromURL(imageUrl);
-      await imageRef.delete();
-    } catch (e) {
-      Fluttertoast.showToast(msg: "Failed to delete image from storage: $e");
-    }
-  }
-
-  void deletePostAndNavigateBack() {
-    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
-
-    databaseReference
-        .child('Blogs')
-        .child(widget.data.postId)
-        .remove()
-        .then((_) async {
-      await deleteImageFromFirebaseStorage(widget.data.image);
-
-      Fluttertoast.showToast(msg: "Post successfully deleted");
-      // if (!mounted) return;
-      Navigator.popUntil(context, ModalRoute.withName('/'));
-    }).catchError((error) {
-      Fluttertoast.showToast(msg: "Failed to delete post: $error");
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final bool currentUserIsAuthor =
-        FirebaseAuth.instance.currentUser?.email == widget.data.userEmail;
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Constants.primaryColor, width: 1),
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
       ),
-      margin: const EdgeInsets.all(15.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (currentUserIsAuthor && widget.isCommentScreen)
-            GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Confirm Delete"),
-                      content: const Text(
-                          "Are you sure you want to delete this post?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("No"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            deletePostAndNavigateBack();
-                          },
-                          child: const Text("Yes"),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: const Padding(
-                padding: EdgeInsets.all(5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Delete",
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    SizedBox(width: 5),
-                    Icon(
-                      Icons.delete,
-                      color: Colors.red,
-                    ),
-                  ],
-                ),
-              ),
-            ),
           Stack(
             children: [
               Hero(
@@ -348,10 +268,10 @@ class _SinglePostState extends State<SinglePost> {
                     );
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
                       width: MediaQuery.of(context).size.width,
-                      height: 250,
+                      height: 300,
                       fit: BoxFit.cover,
                       imageUrl: widget.data.image,
                       placeholder: (context, url) => Center(
@@ -389,7 +309,7 @@ class _SinglePostState extends State<SinglePost> {
                 ),
             ],
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
@@ -398,9 +318,9 @@ class _SinglePostState extends State<SinglePost> {
                 Text(
                   widget.data.title,
                   style: TextStyle(
-                    color: Constants.primaryColor,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    fontSize: 22,
+                    fontFamily: 'Roboto',
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -412,23 +332,35 @@ class _SinglePostState extends State<SinglePost> {
                     fontSize: 18,
                   ),
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  'By : ${widget.data.userEmail}',
-                  style: TextStyle(
-                    color: Constants.primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'On : ${formatTimestamp(widget.data.timestamp)}',
-                  style: TextStyle(
-                    color: Constants.primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(widget
+                          .userProfilePics[widget.data.userEmail]
+                          .toString()),
+                      radius: 25,
+                    ),
+                    SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.data.userEmail,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          formatTimestamp(widget.data.timestamp),
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -472,6 +404,7 @@ class _SinglePostState extends State<SinglePost> {
                                 blogPost: SinglePost(
                                   data: widget.data,
                                   isCommentScreen: true,
+                                  userProfilePics: widget.userProfilePics,
                                 ),
                               ),
                               type: PageTransitionType.topToBottom),
