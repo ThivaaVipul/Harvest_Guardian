@@ -241,13 +241,19 @@ class _AddBlogPostState extends State<AddBlogPost> {
               ElevatedButton(
                 onPressed: _uploadBlogPost,
                 style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
                   backgroundColor: Constants.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 5,
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 ),
-                child: const Text(
-                  "Add Post",
+                child: Text(
+                  'Add Post',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

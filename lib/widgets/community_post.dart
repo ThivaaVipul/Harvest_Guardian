@@ -10,7 +10,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:harvest_guardian/constants.dart';
 import 'package:harvest_guardian/screens/comments.dart';
 import 'package:harvest_guardian/utils/blogs.dart';
-import 'package:harvest_guardian/widgets/like_button.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
@@ -46,7 +45,7 @@ class _SinglePostState extends State<SinglePost> {
     try {
       await FlutterShare.share(
         title: widget.data.title,
-        text: "*${widget.data.title}* ${widget.data.desc}",
+        text: "*${widget.data.title}*\n\n${widget.data.desc}",
         linkUrl: widget.data.image,
         chooserTitle: 'Share via',
       );
@@ -63,7 +62,7 @@ class _SinglePostState extends State<SinglePost> {
     return formattedDate;
   }
 
-  void toggleLike() async {
+  Future<void> toggleLike() async {
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
     String currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
 
@@ -87,7 +86,7 @@ class _SinglePostState extends State<SinglePost> {
       }
 
       Future.delayed(
-        const Duration(milliseconds: 1500),
+        const Duration(milliseconds: 1000),
         () {
           if (mounted) {
             setState(() {
@@ -441,7 +440,18 @@ class _SinglePostState extends State<SinglePost> {
               Column(
                 children: [
                   const SizedBox(height: 20),
-                  LikeButton(isLiked: isLiked, onTap: toggleLike),
+                  GestureDetector(
+                    onTap: toggleLike,
+                    child: Icon(
+                      widget.data.likes.contains(currentUser?.email)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: widget.data.likes.contains(currentUser?.email)
+                          ? Colors.red
+                          : Constants.primaryColor,
+                      size: 25,
+                    ),
+                  ),
                   Text(
                     likeCount.toString(),
                     style: TextStyle(color: Constants.primaryColor),

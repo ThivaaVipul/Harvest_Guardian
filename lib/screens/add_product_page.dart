@@ -99,12 +99,31 @@ class _AddProductPageState extends State<AddProductPage> {
                                       _imageFile!,
                                       fit: BoxFit.cover,
                                     )
-                                  : Center(
-                                      child: Text(
-                                        'Product Image',
-                                        style: TextStyle(
-                                            color: Constants.primaryColor),
-                                      ),
+                                  : Column(
+                                      children: [
+                                        InkWell(
+                                          splashColor: Constants.primaryColor
+                                              .withOpacity(0.2),
+                                          child: SizedBox(
+                                            height: 100,
+                                            child: Center(
+                                              child: Icon(
+                                                Icons
+                                                    .add_photo_alternate_rounded,
+                                                size: 50,
+                                                color: Constants.primaryColor,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Center(
+                                          child: Text(
+                                            'Product Image',
+                                            style: TextStyle(
+                                                color: Constants.primaryColor),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                             ),
                           ),

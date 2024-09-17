@@ -253,10 +253,32 @@ class _EditProductPageState extends State<EditProductPage> {
                                           fit: BoxFit.cover,
                                         )
                                       : Center(
-                                          child: Text(
-                                            'Product Image',
-                                            style: TextStyle(
-                                                color: Constants.primaryColor),
+                                          child: Column(
+                                            children: [
+                                              InkWell(
+                                                splashColor: Constants
+                                                    .primaryColor
+                                                    .withOpacity(0.2),
+                                                child: SizedBox(
+                                                  height: 100,
+                                                  child: Center(
+                                                    child: Icon(
+                                                      Icons
+                                                          .add_photo_alternate_rounded,
+                                                      size: 50,
+                                                      color: Constants
+                                                          .primaryColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                'Product Image',
+                                                style: TextStyle(
+                                                    color:
+                                                        Constants.primaryColor),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                 ),

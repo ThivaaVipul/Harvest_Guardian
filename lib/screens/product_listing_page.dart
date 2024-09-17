@@ -35,7 +35,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
 
   void _onSearchChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 1000), () {
+    _debounce = Timer(const Duration(milliseconds: 1250), () {
       setState(() {
         searchQuery = value.toLowerCase();
       });
