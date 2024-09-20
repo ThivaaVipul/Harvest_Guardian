@@ -459,43 +459,6 @@ class _CommunityPageState extends State<CommunityPage> {
     );
   }
 
-  Widget _buildShimmerSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildShimmerImage(),
-        const SizedBox(height: 15),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildShimmerText(width: 150.0, height: 20.0),
-              const SizedBox(height: 5),
-              _buildShimmerText(width: 300.0, height: 18.0),
-              const SizedBox(height: 5),
-              _buildShimmerText(width: 200.0, height: 14.0),
-              const SizedBox(height: 5),
-              _buildShimmerText(width: 150.0, height: 14.0),
-            ],
-          ),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(width: 10),
-            _buildShimmerLikeCommentShare(),
-            const SizedBox(width: 20),
-            _buildShimmerLikeCommentShare(),
-            const SizedBox(width: 20),
-            _buildShimmerLikeCommentShare(),
-          ],
-        ),
-        const SizedBox(height: 10),
-      ],
-    );
-  }
-
   Widget _buildShimmerLoading() {
     return SingleChildScrollView(
       child: Column(
@@ -504,27 +467,101 @@ class _CommunityPageState extends State<CommunityPage> {
     );
   }
 
-  Widget _buildShimmerImage() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        width: double.infinity,
-        height: 250.0,
-        color: Colors.grey[300]!,
-      ),
-    );
-  }
-
-  Widget _buildShimmerText({required double width, required double height}) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        width: width,
-        height: height,
-        color: Colors.grey[300]!,
-      ),
+  Widget _buildShimmerSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            width: double.infinity,
+            height: 300, // Adjust height based on image size
+            color: Colors.grey[300]!,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  width: 250, // Adjust width based on title length
+                  height: 24,
+                  color: Colors.grey[300]!,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  width: 350, // Adjust width based on description length
+                  height: 36,
+                  color: Colors.grey[300]!,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: ClipOval(
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        color: Colors.grey[300]!,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    children: [
+                      Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          width: 100,
+                          height: 20,
+                          color: Colors.grey[300]!,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          width: 100,
+                          height: 20,
+                          color: Colors.grey[300]!,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 10),
+                  _buildShimmerLikeCommentShare(),
+                  const SizedBox(width: 20),
+                  _buildShimmerLikeCommentShare(),
+                  const SizedBox(width: 20),
+                  _buildShimmerLikeCommentShare(),
+                ],
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

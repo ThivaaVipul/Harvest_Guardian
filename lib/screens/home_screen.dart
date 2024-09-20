@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
-                  childAspectRatio: 2,
+                  childAspectRatio: 1.8,
                   children: [
                     _buildGridCard(
                       context,

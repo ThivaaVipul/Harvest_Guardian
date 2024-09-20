@@ -290,8 +290,8 @@ class _SinglePostState extends State<SinglePost> {
               ),
               if (showHeart)
                 Positioned(
-                  left: MediaQuery.of(context).size.width / 2 - 70,
-                  top: 250.0 / 2 - 50,
+                  left: (MediaQuery.of(context).size.width - heartSize) / 2,
+                  top: 300.0 / 2 - 50,
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 500),
                     opacity: showHeart ? 1.0 : 0.0,

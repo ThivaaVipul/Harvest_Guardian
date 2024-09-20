@@ -1,6 +1,9 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,6 +30,8 @@ class _ProductListingPageState extends State<ProductListingPage> {
   TextEditingController searchController = TextEditingController();
   FocusNode searchFocusNode = FocusNode();
   Timer? _debounce;
+  Map<String, String> userProfilePics = {};
+  bool _isLoading = true;
 
   Future<void> _refreshProducts() async {
     await Future.delayed(Duration(seconds: 2));
@@ -40,6 +45,40 @@ class _ProductListingPageState extends State<ProductListingPage> {
         searchQuery = value.toLowerCase();
       });
     });
+  }
+
+  Future<void> _fetchUserProfilePics() async {
+    DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('Users');
+    try {
+      var snapshot = await usersRef.once();
+
+      var data = snapshot.snapshot.value;
+      if (data != null && data is Map<dynamic, dynamic>) {
+        setState(() {
+          userProfilePics.clear();
+          data.forEach((uid, userData) {
+            userProfilePics[userData['email']] =
+                userData['photoUrl'] ?? Constants.defaultProfileImgUrl;
+          });
+        });
+      } else {
+        Fluttertoast.showToast(msg: "Error fetching user profile pictures");
+      }
+    } catch (error) {
+      Fluttertoast.showToast(
+          msg: "Error fetching user profile pictures: $error");
+    }
+  }
+
+  @override
+  void initState() {
+    _fetchUserProfilePics();
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    super.initState();
   }
 
   @override
@@ -76,8 +115,31 @@ class _ProductListingPageState extends State<ProductListingPage> {
                 .orderBy('timestamp', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+              if (_isLoading ||
+                  snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Lottie.asset(
+                            'assets/loading_animation_txt.json',
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.fill,
+                          ),
+                          Text(
+                            "Fetching Products..",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
               }
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return _buildNoProductsWidget(searchQuery);
@@ -116,7 +178,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                         onChanged: _onSearchChanged,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(vertical: 15.0),
-                          hintText: "Search by product name or location...",
+                          hintText: "Search by product name or location",
                           hintStyle: TextStyle(color: Colors.grey[600]),
                           prefixIcon:
                               Icon(Icons.search, color: Constants.primaryColor),
@@ -212,16 +274,20 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    Divider(
+                                        thickness: 1,
+                                        color: Constants.primaryColor),
+                                    SizedBox(height: 10),
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: Text(
-                                            name,
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black87,
-                                            ),
+                                          child: IconTextRow(
+                                            icon: Icons.shopping_bag_outlined,
+                                            text: name,
+                                            textStyle: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 24,
+                                                color: Colors.black87),
                                           ),
                                         ),
                                         if (DateTime.now()
@@ -234,7 +300,7 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                             decoration: BoxDecoration(
                                               color: Colors.deepOrange,
                                               borderRadius:
-                                                  BorderRadius.circular(12),
+                                                  BorderRadius.circular(8),
                                             ),
                                             child: Text(
                                               'NEW',
@@ -245,18 +311,17 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           ),
                                       ],
                                     ),
-                                    SizedBox(height: 8),
-                                    Divider(
-                                        thickness: 1, color: Colors.grey[300]),
+                                    SizedBox(height: 5),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         IconTextRow(
-                                          icon: Icons.storage,
+                                          icon: Icons.storage_outlined,
                                           text: 'Quantity: $quantity',
                                           textStyle: TextStyle(
-                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
                                               color: Colors.black87),
                                         ),
                                         IconTextRow(
@@ -265,39 +330,70 @@ class _ProductListingPageState extends State<ProductListingPage> {
                                           textStyle: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 20,
-                                              color: Colors.black87),
+                                              color: Colors.green),
                                         ),
                                       ],
                                     ),
                                     SizedBox(height: 4),
-                                    IconTextRow(
-                                      icon: Icons.place,
-                                      text: 'Location: $location',
-                                      textStyle: TextStyle(
-                                          fontSize: 16, color: Colors.black87),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        IconTextRow(
+                                          icon: Icons.place_outlined,
+                                          text: location,
+                                          textStyle: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black87),
+                                        ),
+                                        IconTextRow(
+                                          icon: Icons.phone,
+                                          text: contact,
+                                          textStyle: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black87),
+                                        ),
+                                      ],
                                     ),
-                                    IconTextRow(
-                                      icon: Icons.phone,
-                                      text: 'Contact: $contact',
-                                      textStyle: TextStyle(
-                                          fontSize: 16, color: Colors.black87),
+                                    SizedBox(height: 6),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                              userProfilePics[mail].toString()),
+                                          radius: 40,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            IconTextRow(
+                                              icon: Icons.person,
+                                              text: currentuser != mail
+                                                  ? mail
+                                                  : 'You',
+                                              textStyle: TextStyle(
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                            IconTextRow(
+                                              icon: Icons.alarm,
+                                              text: formattedDateTime,
+                                              textStyle: TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 4),
-                                    IconTextRow(
-                                      icon: Icons.calendar_today,
-                                      text: 'Posted on: $formattedDateTime',
-                                      textStyle: TextStyle(
-                                          fontSize: 16, color: Colors.grey),
-                                    ),
-                                    SizedBox(height: 4),
-                                    IconTextRow(
-                                      icon: Icons.person,
-                                      text: currentuser != mail
-                                          ? 'By: $mail'
-                                          : 'By: You',
-                                      textStyle: TextStyle(
-                                          fontSize: 16, color: Colors.black54),
-                                    ),
+                                    SizedBox(height: 6),
+                                    Divider(
+                                        thickness: 1,
+                                        color: Constants.primaryColor),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [

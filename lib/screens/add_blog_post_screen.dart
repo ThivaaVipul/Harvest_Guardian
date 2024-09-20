@@ -168,76 +168,67 @@ class _AddBlogPostState extends State<AddBlogPost> {
               const SizedBox(
                 height: 30,
               ),
-              SizedBox(
-                height: 45,
-                child: TextFormField(
-                  controller: _titleController,
-                  style: TextStyle(
+              TextFormField(
+                controller: _titleController,
+                style: TextStyle(
+                  color: Constants.primaryColor,
+                  fontSize: 16,
+                ),
+                textCapitalization: TextCapitalization.sentences,
+                decoration: InputDecoration(
+                  labelStyle: TextStyle(
                     color: Constants.primaryColor,
                     fontSize: 16,
                   ),
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle(
+                  labelText: 'Title',
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(
                       color: Constants.primaryColor,
-                      fontSize: 16,
+                      width: 1,
                     ),
-                    labelText: 'Title',
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      borderSide: BorderSide(
-                        color: Constants.primaryColor,
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      borderSide: BorderSide(
-                        color: Constants.primaryColor,
-                        width: 1,
-                      ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(
+                      color: Constants.primaryColor,
+                      width: 1,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 45,
-                child: TextFormField(
-                  controller: _descriptionController,
-                  style: TextStyle(
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _descriptionController,
+                style: TextStyle(
+                  color: Constants.primaryColor,
+                  fontSize: 16,
+                ),
+                maxLines: 5, // Allows description to span multiple lines
+                textCapitalization: TextCapitalization.sentences,
+                decoration: InputDecoration(
+                  labelStyle: TextStyle(
                     color: Constants.primaryColor,
                     fontSize: 16,
                   ),
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle(
+                  labelText: 'Description',
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(
                       color: Constants.primaryColor,
-                      fontSize: 16,
+                      width: 1,
                     ),
-                    labelText: 'Description',
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      borderSide: BorderSide(
-                        color: Constants.primaryColor,
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      borderSide: BorderSide(
-                        color: Constants.primaryColor,
-                        width: 1,
-                      ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(
+                      color: Constants.primaryColor,
+                      width: 1,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _uploadBlogPost,
                 style: ElevatedButton.styleFrom(
