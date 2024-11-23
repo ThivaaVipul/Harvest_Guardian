@@ -334,6 +334,7 @@ class _SignUpState extends State<SignUp> {
         });
       }
     } catch (e) {
+      print(e);
       Fluttertoast.showToast(
         msg: 'An unexpected error occurred.',
         backgroundColor: Colors.red,

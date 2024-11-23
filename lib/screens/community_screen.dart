@@ -60,8 +60,10 @@ class _CommunityPageState extends State<CommunityPage> {
         Fluttertoast.showToast(msg: "Error fetching user profile pictures");
       }
     } catch (error) {
-      Fluttertoast.showToast(
-          msg: "Error fetching user profile pictures: $error");
+      if (mounted) {
+        Fluttertoast.showToast(
+            msg: "Error fetching user profile pictures: $error");
+      }
     }
   }
 
@@ -109,21 +111,28 @@ class _CommunityPageState extends State<CommunityPage> {
         });
         newData.sort(
             (a, b) => b.timestamp.compareTo(a.timestamp)); // Sort by timestamp
-        setState(() {
-          loading = false;
-        });
+
+        if (mounted) {
+          setState(() {
+            loading = false;
+          });
+        }
         return newData;
       } else {
-        setState(() {
-          loading = false;
-        });
+        if (mounted) {
+          setState(() {
+            loading = false;
+          });
+        }
         Fluttertoast.showToast(msg: "No Posts Uploaded Yet");
         return [];
       }
     } catch (error) {
-      setState(() {
-        loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
       Fluttertoast.showToast(msg: "Error fetching data: $error");
       rethrow;
     }

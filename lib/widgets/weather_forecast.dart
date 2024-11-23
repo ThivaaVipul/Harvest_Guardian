@@ -12,12 +12,12 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WeatherWidget extends StatefulWidget {
   const WeatherWidget({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _WeatherWidgetState createState() => _WeatherWidgetState();
 }
 
@@ -32,8 +32,8 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   void initState() {
     super.initState();
     _checkLocationPermission();
-    _getLocationAndWeather();
-    _timer = Timer.periodic(const Duration(minutes: 10), (timer) {
+    _loadWeatherDataFromLocalStorage();
+    _timer = Timer.periodic(const Duration(minutes: 2), (timer) {
       _getLocationAndWeather();
     });
   }
@@ -61,16 +61,32 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         Position position = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high,
             timeLimit: const Duration(seconds: 10));
+
+        print(
+            'Latitude: ${position.latitude}, Longitude: ${position.longitude}');
+
         List<Placemark> placemarks = await placemarkFromCoordinates(
             position.latitude, position.longitude);
+
         setState(() {
           _city = placemarks[0].locality ?? 'Unknown Location';
+
           _apiUrl =
               'https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$openWeatherMapAPI';
+
+          print('API URL: $_apiUrl');
+
+          if (_apiUrl.isEmpty || openWeatherMapAPI.isEmpty) {
+            Fluttertoast.showToast(msg: 'Invalid API URL or API key');
+            return;
+          }
         });
+
         _fetchWeatherData();
       } catch (e) {
-        Fluttertoast.showToast(msg: 'Error getting location');
+        if (mounted) {
+          Fluttertoast.showToast(msg: 'Error getting location: $e');
+        }
       }
     }
   }
@@ -78,6 +94,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   Future<void> _fetchWeatherData() async {
     try {
       var response = await http.get(Uri.parse(_apiUrl));
+
       if (response.statusCode == 200) {
         setState(() {
           _weatherData = jsonDecode(response.body);
@@ -85,12 +102,44 @@ class _WeatherWidgetState extends State<WeatherWidget> {
           double celsiusTemperature = kelvinTemperature - 273.15;
           _weatherData['main']['temp'] = celsiusTemperature.toStringAsFixed(2);
         });
+        _saveWeatherDataToLocalStorage();
       } else {
         Fluttertoast.showToast(msg: 'Failed to load weather data');
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Error fetching weather data');
+      if (mounted) {
+        print('Error fetching weather data: $e');
+        Fluttertoast.showToast(msg: 'Error fetching weather data');
+      }
     }
+  }
+
+  Future<void> _saveWeatherDataToLocalStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('weatherData', jsonEncode(_weatherData));
+    prefs.setString('city', _city);
+    prefs.setInt('lastFetched', DateTime.now().millisecondsSinceEpoch);
+  }
+
+  Future<void> _loadWeatherDataFromLocalStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedWeatherData = prefs.getString('weatherData');
+    String? savedCity = prefs.getString('city');
+    int? lastFetched = prefs.getInt('lastFetched');
+
+    if (savedWeatherData != null && lastFetched != null) {
+      int timeDifference = DateTime.now().millisecondsSinceEpoch - lastFetched;
+      if (timeDifference < 120000) {
+        setState(() {
+          _weatherData = jsonDecode(savedWeatherData);
+          _city = savedCity ?? 'Unknown Location';
+        });
+        return; // Use cached data if it was fetched recently
+      }
+    }
+
+    // If no cached data or it’s outdated, fetch new data
+    _getLocationAndWeather();
   }
 
   String getCamelCase(String text) {
