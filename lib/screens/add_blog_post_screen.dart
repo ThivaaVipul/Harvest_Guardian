@@ -10,7 +10,9 @@ import 'package:harvest_guardian/constants.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddBlogPost extends StatefulWidget {
-  const AddBlogPost({super.key});
+  final String? imagePath; // Optional image parameter
+
+  const AddBlogPost({super.key, this.imagePath});
 
   @override
   State<AddBlogPost> createState() => _AddBlogPostState();
@@ -21,11 +23,11 @@ class _AddBlogPostState extends State<AddBlogPost> {
   final TextEditingController _descriptionController = TextEditingController();
 
   bool _isLoading = false;
-
   File? _image;
 
   final picker = ImagePicker();
 
+  // Get image from the gallery if none is passed
   Future _getImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
@@ -40,7 +42,7 @@ class _AddBlogPostState extends State<AddBlogPost> {
 
   Future<void> _uploadBlogPost() async {
     FocusScope.of(context).unfocus();
-    if (_image == null) {
+    if (_image == null && widget.imagePath == null) {
       Fluttertoast.showToast(msg: "Select Image First");
       return;
     } else if (_titleController.text.isEmpty) {
@@ -56,21 +58,29 @@ class _AddBlogPostState extends State<AddBlogPost> {
     });
 
     try {
-      Reference storageReference = FirebaseStorage.instance
-          .ref()
-          .child("BlogImages")
-          .child(
-              '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}.jpg');
-      UploadTask uploadTask = storageReference.putFile(_image!);
-      await uploadTask;
+      String? imageUrl;
 
-      String downloadUrl = await storageReference.getDownloadURL();
+      // Upload image if the user selects one or if one is passed
+      if (_image != null) {
+        Reference storageReference = FirebaseStorage.instance
+            .ref()
+            .child("BlogImages")
+            .child(
+                '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}.jpg');
+        UploadTask uploadTask = storageReference.putFile(_image!);
+        await uploadTask;
+
+        imageUrl = await storageReference.getDownloadURL();
+      } else if (widget.imagePath != null) {
+        // If no image is selected, use the passed image
+        imageUrl = widget.imagePath;
+      }
 
       int timestamp = DateTime.now().millisecondsSinceEpoch;
       String currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
 
       Map<String, dynamic> data = {
-        'image': downloadUrl,
+        'image': imageUrl,
         'desc': _descriptionController.text.toString(),
         'title': _titleController.text.toString(),
         'likes': [],
@@ -92,6 +102,15 @@ class _AddBlogPostState extends State<AddBlogPost> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // If an image path is passed, initialize the _image variable with it
+    if (widget.imagePath != null) {
+      _image = File(widget.imagePath!);
     }
   }
 
@@ -146,21 +165,29 @@ class _AddBlogPostState extends State<AddBlogPost> {
                               fit: BoxFit.cover,
                               filterQuality: FilterQuality.high,
                             )
-                          : InkWell(
-                              onTap: _getImage,
-                              splashColor:
-                                  Constants.primaryColor.withOpacity(0.2),
-                              child: SizedBox(
-                                height: 250,
-                                child: Center(
-                                  child: Icon(
-                                    Icons.add_photo_alternate_rounded,
-                                    size: 100,
-                                    color: Constants.primaryColor,
+                          : widget.imagePath != null
+                              ? Image.network(
+                                  widget.imagePath!,
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 250.0,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                )
+                              : InkWell(
+                                  onTap: _getImage,
+                                  splashColor:
+                                      Constants.primaryColor.withOpacity(0.2),
+                                  child: SizedBox(
+                                    height: 250,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.add_photo_alternate_rounded,
+                                        size: 100,
+                                        color: Constants.primaryColor,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
                     ),
                   ],
                 ),

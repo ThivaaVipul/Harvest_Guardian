@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:harvest_guardian/constants.dart';
+import 'package:harvest_guardian/screens/add_blog_post_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 import '../widgets/disease_detail.dart';
@@ -304,6 +305,7 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
                 ),
               ),
               const SizedBox(height: 30),
+              // In the PlantDiseaseDetectionPage
               if (_predictions != null)
                 Column(
                   children: [
@@ -328,6 +330,75 @@ class _PlantDiseaseDetectionPageState extends State<PlantDiseaseDetectionPage> {
                         imageUrl: disease.img,
                       );
                     }),
+                    const SizedBox(height: 20),
+
+                    // New Label and Button for suggesting users to post in the community
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF5F5F5), // Light grey background
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'The prediction might not be accurate. If you feel unsure, please share your issue with the community!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        // Navigate to AddPostPage with the image preloaded
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AddBlogPost(imagePath: _imageFile!.path),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Constants.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        elevation: 5,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      ),
+                      child: Text(
+                        'Share with Community',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF5F5F5), // Light grey background
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Does this diagnosis match your observation?\nIf not, please share the image and disease name if you know.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

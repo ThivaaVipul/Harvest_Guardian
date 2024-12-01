@@ -12,7 +12,6 @@ class WeatherDashboard extends StatefulWidget {
   const WeatherDashboard({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _WeatherDashboardState createState() => _WeatherDashboardState();
 }
 
@@ -85,68 +84,74 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
   }
 
   Widget _buildWeatherChart(List<WeatherData> weatherData) {
-    return Column(
-      children: [
-        Text(
-          _locationName,
-          style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Constants.primaryColor),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          height: 250,
-          width: MediaQuery.of(context).size.width - 50,
-          child: LineChart(
-            swapAnimationCurve: Curves.linear,
-            LineChartData(
-              backgroundColor: Colors.green.withAlpha(40),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: weatherData
-                      .map((data) => FlSpot(
-                          data.date.millisecondsSinceEpoch.toDouble(),
-                          data.temp))
-                      .toList(),
-                  isCurved: true,
-                  colors: [Colors.green, Colors.black],
-                  barWidth: 4,
-                  dotData: FlDotData(show: true),
-                ),
-              ],
-              titlesData: FlTitlesData(
-                leftTitles: SideTitles(
-                  reservedSize: 40,
-                  margin: 10,
-                  showTitles: true,
-                  getTextStyles: (context, _) => TextStyle(
-                    color: Constants.primaryColor,
-                    fontSize: 18,
+    return Card(
+      margin: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 250,
+              width: double.infinity,
+              child: LineChart(
+                swapAnimationCurve: Curves.linear,
+                LineChartData(
+                  backgroundColor: Colors.lightBlue.withOpacity(0.1),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: weatherData
+                          .map((data) => FlSpot(
+                              data.date.millisecondsSinceEpoch.toDouble(),
+                              data.temp))
+                          .toList(),
+                      isCurved: true,
+                      colors: [
+                        Colors.blue, // Start of the gradient
+                        Colors.blueAccent // End of the gradient
+                      ],
+                      barWidth: 3,
+                      belowBarData: BarAreaData(
+                        show: true,
+                        colors: [
+                          Color(0xff296e48).withOpacity(0.3),
+                          Color(0xff8cd790).withOpacity(0.1),
+                        ],
+                        gradientFrom: Offset(0, 0),
+                        gradientTo: Offset(0, 1),
+                      ),
+                      dotData: FlDotData(show: true),
+                    ),
+                  ],
+                  titlesData: FlTitlesData(
+                    leftTitles: SideTitles(
+                      reservedSize: 40,
+                      margin: 8,
+                      showTitles: true,
+                      getTextStyles: (context, _) => const TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 12,
+                      ),
+                    ),
+                    rightTitles: SideTitles(showTitles: false),
+                    bottomTitles: SideTitles(
+                      showTitles: true,
+                      getTitles: (value) {
+                        return DateFormat('E').format(
+                            DateTime.fromMillisecondsSinceEpoch(value.toInt()));
+                      },
+                      reservedSize: 32,
+                    ),
+                    topTitles: SideTitles(showTitles: false),
                   ),
+                  borderData: FlBorderData(show: false),
                 ),
-                rightTitles: SideTitles(showTitles: false),
-                bottomTitles: SideTitles(
-                  showTitles: true,
-                  getTitles: (value) {
-                    return DateFormat('E').format(
-                        DateTime.fromMillisecondsSinceEpoch(value.toInt()));
-                  },
-                  margin: 10,
-                  getTextStyles: (context, _) =>
-                      TextStyle(color: Constants.primaryColor, fontSize: 18),
-                ),
-                topTitles: SideTitles(showTitles: false),
-              ),
-              borderData: FlBorderData(
-                show: false,
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -162,14 +167,13 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
           style: TextStyle(
             color: Constants.primaryColor,
             fontWeight: FontWeight.bold,
-            fontSize: 26,
+            fontSize: 24,
           ),
         ),
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(
             Icons.arrow_back,
-            size: 30,
             color: Constants.primaryColor,
           ),
         ),
@@ -192,29 +196,132 @@ class _WeatherDashboardState extends State<WeatherDashboard> {
                 } else {
                   List<WeatherData> weatherData =
                       _parseWeatherData(snapshot.data!);
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: _buildWeatherChart(weatherData),
-                      ),
-                      Expanded(
-                        child: ListView.builder(
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Color(0xff296e48), Color(0xffa8d5ba)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  offset: const Offset(0, 4),
+                                  blurRadius: 6,
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 20),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.pin_drop,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      _locationName.isEmpty
+                                          ? 'Fetching Location...'
+                                          : _locationName,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Temperature Over Time',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        _buildWeatherChart(weatherData),
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true, // Allows ListView to fit in Column
                           itemCount: weatherData.length,
                           itemBuilder: (context, index) {
                             WeatherData data = weatherData[index];
-                            return ListTile(
-                              leading: Image.network(
-                                  'https://openweathermap.org/img/wn/${data.icon}.png'),
-                              title: Text(
-                                  '${DateFormat('E, MMM d').format(data.date)}: ${data.description.capitalize()}'),
-                              subtitle: Text(
-                                  'Min: ${data.minTemp}°C, Max: ${data.maxTemp}°C, Humidity: ${data.humidity}%'),
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.blueGrey.withOpacity(0.1),
+                                    ),
+                                  ),
+                                  ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
+                                    leading: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            width: 50,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              color: Colors.lightBlue
+                                                  .withOpacity(0.3),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          Image.network(
+                                            'https://openweathermap.org/img/wn/${data.icon}.png',
+                                            width: 50,
+                                            height: 50,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    title: Text(
+                                      '${DateFormat('E, MMM d').format(data.date)}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    subtitle: Text(
+                                      '🌡️ Min: ${data.minTemp}°C, Max: ${data.maxTemp}°C\n💧 Humidity: ${data.humidity}%',
+                                      style: const TextStyle(height: 1.5),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
                           },
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 }
               },
